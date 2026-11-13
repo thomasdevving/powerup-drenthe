@@ -95,6 +95,9 @@ export const resolveTimeline = async (
     cursor += frames;
   }
   const outroFrames = Math.round(OUTRO_SECONDS * FPS);
+  if (cursor + outroFrames > 120 * FPS) {
+    throw new Error(`Pitch duurt ${((cursor + outroFrames) / FPS).toFixed(2)} s; maximaal 120 s. Kort opnames of tekst in.`);
+  }
   return {
     fps: FPS,
     padding: PADDING_SECONDS,

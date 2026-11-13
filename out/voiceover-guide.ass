@@ -1,0 +1,46 @@
+[Script Info]
+ScriptType: v4.00+
+PlayResX: 1920
+PlayResY: 1080
+WrapStyle: 0
+[V4+ Styles]
+Format: Name,Fontname,Fontsize,PrimaryColour,SecondaryColour,OutlineColour,BackColour,Bold,Italic,Underline,StrikeOut,ScaleX,ScaleY,Spacing,Angle,BorderStyle,Outline,Shadow,Alignment,MarginL,MarginR,MarginV,Encoding
+Style: Voice,DejaVu Sans,43,&H0040D2FF,&H00FFFFFF,&HE6000000,&HE6000000,-1,0,0,0,100,100,0,0,3,18,0,2,75,75,35,1
+Style: Scene,DejaVu Sans,32,&H0040D2FF,&H00FFFFFF,&HE6000000,&HE6000000,-1,0,0,0,100,100,0,0,3,14,0,7,40,40,35,1
+[Events]
+Format: Layer,Start,End,Style,Name,MarginL,MarginR,MarginV,Effect,Text
+Dialogue: 0,0:00:00.00,0:00:08.40,Scene,,0,0,0,,01/12 · De uitdaging van vandaag
+Dialogue: 1,0:00:00.50,0:00:06.16,Voice,,0,0,0,,{\kf44}Drentse {\kf44}bedrijven {\kf44}willen {\kf44}groeien {\kf44}en {\kf44}verduurzamen, {\kf44}maar {\kf44}het {\kf44}elektriciteitsnet {\kf44}zit {\kf44}vol. {\kf44}Uitbreidingen {\kf44}en
+Dialogue: 1,0:00:06.16,0:00:07.90,Voice,,0,0,0,,{\kf44}nieuwe {\kf44}ontwikkelingen {\kf44}lopen {\kf44}vast.
+Dialogue: 0,0:00:08.40,0:00:15.10,Scene,,0,0,0,,02/12 · Het echte probleem is groter
+Dialogue: 1,0:00:08.90,0:00:14.60,Voice,,0,0,0,,{\kf48}Naast {\kf48}netcongestie {\kf48}vragen {\kf48}elektrificatie, {\kf48}hittestress, {\kf48}wateroverlast {\kf48}en {\kf48}ruimte {\kf48}om {\kf48}een {\kf48}integrale {\kf48}aanpak.
+Dialogue: 0,0:00:15.10,0:00:22.27,Scene,,0,0,0,,03/12 · Onze visie
+Dialogue: 1,0:00:15.60,0:00:20.61,Voice,,0,0,0,,{\kf39}Wij {\kf39}kijken {\kf39}vooruit {\kf39}en {\kf39}ontwerpen {\kf39}het {\kf39}bedrijventerrein {\kf39}van {\kf39}de {\kf39}toekomst: {\kf39}slimmer, {\kf39}groener, {\kf39}efficiënter
+Dialogue: 1,0:00:20.61,0:00:21.77,Voice,,0,0,0,,{\kf39}en {\kf39}gezamenlijk {\kf39}georganiseerd.
+Dialogue: 0,0:00:22.27,0:00:34.40,Scene,,0,0,0,,04/12 · De slimme Energy Hub
+Dialogue: 1,0:00:22.77,0:00:28.13,Voice,,0,0,0,,{\kf41}De {\kf41}Energy {\kf41}Hub {\kf41}brengt {\kf41}ons {\kf41}van {\kf41}vraaggestuurde {\kf41}naar {\kf41}aanbodgestuurde {\kf41}energielevering. {\kf41}We {\kf41}stemmen {\kf41}flexibel
+Dialogue: 1,0:00:28.13,0:00:33.49,Voice,,0,0,0,,{\kf41}laden {\kf41}en {\kf41}produceren {\kf41}af {\kf41}op {\kf41}beschikbare {\kf41}opwek {\kf41}en {\kf41}netruimte. {\kf41}Lokale {\kf41}opslag {\kf41}helpt {\kf41}stroompieken
+Dialogue: 1,0:00:33.49,0:00:33.90,Voice,,0,0,0,,{\kf41}beperken.
+Dialogue: 0,0:00:34.40,0:00:56.37,Scene,,0,0,0,,05/12 · Elektriciteit, warmte en koude
+Dialogue: 1,0:00:34.90,0:00:40.70,Voice,,0,0,0,,{\kf45}Maar {\kf45}er {\kf45}is {\kf45}meer {\kf45}dan {\kf45}elektriciteit. {\kf45}Koelinstallaties {\kf45}leveren {\kf45}ook {\kf45}restwarmte. {\kf45}Via {\kf45}een {\kf45}lokaal
+Dialogue: 1,0:00:40.70,0:00:46.50,Voice,,0,0,0,,{\kf45}warmtenet {\kf45}en {\kf45}een {\kf45}warmtepomp {\kf45}kan {\kf45}die {\kf45}andere {\kf45}gebouwen {\kf45}verwarmen. {\kf45}De {\kf45}warmtepomp {\kf45}gebruikt {\kf45}stroom;
+Dialogue: 1,0:00:46.50,0:00:52.30,Voice,,0,0,0,,{\kf45}het {\kf45}dashboard {\kf45}rekent {\kf45}die {\kf45}mee. {\kf45}Een {\kf45}warmtebuffer {\kf45}bewaart {\kf45}overschotten {\kf45}voor {\kf45}later. {\kf45}Blauw {\kf45}toont
+Dialogue: 1,0:00:52.30,0:00:55.87,Voice,,0,0,0,,{\kf45}koude, {\kf45}oranje {\kf45}warmte. {\kf45}Warmte-koudeopslag {\kf45}blijft {\kf45}een {\kf45}locatieafhankelijke {\kf45}optie.
+Dialogue: 0,0:00:56.37,0:01:05.93,Scene,,0,0,0,,06/12 · Ruimtelijke transformatie
+Dialogue: 1,0:00:56.87,0:01:03.05,Voice,,0,0,0,,{\kf48}Groene {\kf48}daken, {\kf48}bomen {\kf48}en {\kf48}waterberging {\kf48}maken {\kf48}het {\kf48}terrein {\kf48}klimaatbestendiger. {\kf48}Gedeelde {\kf48}laadpleinen {\kf48}met {\kf48}zonnepanelen
+Dialogue: 1,0:01:03.05,0:01:05.43,Voice,,0,0,0,,{\kf48}combineren {\kf48}mobiliteit {\kf48}en {\kf48}efficiënt {\kf48}ruimtegebruik.
+Dialogue: 0,0:01:05.93,0:01:10.00,Scene,,0,0,0,,07/12 · Praktijkvoorbeeld Haulerwijk
+Dialogue: 1,0:01:06.43,0:01:09.50,Voice,,0,0,0,,{\kf51}Samenwerking {\kf51}zoals {\kf51}in {\kf51}Haulerwijk {\kf51}inspireert {\kf51}ons.
+Dialogue: 0,0:01:10.00,0:01:17.10,Scene,,0,0,0,,08/12 · Samenwerking en eigenaarschap
+Dialogue: 1,0:01:10.50,0:01:15.79,Voice,,0,0,0,,{\kf41}Via {\kf41}een {\kf41}coöperatie {\kf41}investeren {\kf41}en {\kf41}beheren {\kf41}ondernemers {\kf41}samen, {\kf41}met {\kf41}afspraken {\kf41}over {\kf41}eigendom, {\kf41}kosten
+Dialogue: 1,0:01:15.79,0:01:16.60,Voice,,0,0,0,,{\kf41}en {\kf41}energiegebruik.
+Dialogue: 0,0:01:17.10,0:01:23.00,Scene,,0,0,0,,09/12 · Economische en maatschappelijke voordelen
+Dialogue: 1,0:01:17.60,0:01:22.50,Voice,,0,0,0,,{\kf38}Zo {\kf38}creëren {\kf38}we {\kf38}minder {\kf38}verspilling, {\kf38}groenere {\kf38}ruimte {\kf38}en {\kf38}betere {\kf38}voorwaarden {\kf38}voor {\kf38}economische {\kf38}ontwikkeling.
+Dialogue: 0,0:01:23.00,0:01:37.13,Scene,,0,0,0,,10/12 · Risico's en uitvoerbaarheid
+Dialogue: 1,0:01:23.50,0:01:30.92,Voice,,0,0,0,,{\kf57}Leveringszekerheid, {\kf57}regelgeving, {\kf57}financiering {\kf57}en {\kf57}samenwerking {\kf57}vragen {\kf57}een {\kf57}gefaseerde {\kf57}aanpak. {\kf57}Warmte-uitwisseling {\kf57}vereist {\kf57}geschikte {\kf57}bronnen,
+Dialogue: 1,0:01:30.92,0:01:36.63,Voice,,0,0,0,,{\kf57}afnemers, {\kf57}temperatuur, {\kf57}afstand {\kf57}en {\kf57}financiële {\kf57}haalbaarheid. {\kf57}Soms {\kf57}blijft {\kf57}netverzwaring {\kf57}noodzakelijk.
+Dialogue: 0,0:01:37.13,0:01:46.63,Scene,,0,0,0,,11/12 · Definitieve afsluiter
+Dialogue: 1,0:01:37.63,0:01:42.66,Voice,,0,0,0,,{\kf39}Met {\kf39}slimme {\kf39}energie, {\kf39}gedeelde {\kf39}warmte, {\kf39}groene {\kf39}ruimte {\kf39}en {\kf39}samenwerking {\kf39}bereiden {\kf39}we {\kf39}bedrijventerreinen {\kf39}voor
+Dialogue: 1,0:01:42.66,0:01:46.13,Voice,,0,0,0,,{\kf39}op {\kf39}de {\kf39}toekomst. {\kf39}Vandaag {\kf39}in {\kf39}Drenthe, {\kf39}morgen {\kf39}in {\kf39}Nederland.
+Dialogue: 0,0:01:46.63,0:01:51.47,Scene,,0,0,0,,12/12 · Het team
+Dialogue: 1,0:01:47.13,0:01:50.97,Voice,,0,0,0,,{\kf38}Wij {\kf38}zijn {\kf38}het {\kf38}Energiek {\kf38}Innovatie {\kf38}Collectief: {\kf38}samen {\kf38}voor {\kf38}de {\kf38}toekomst.

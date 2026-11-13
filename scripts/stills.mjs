@@ -3,7 +3,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import {renderStill} from '@remotion/renderer';
-import {ROOT, chromiumOptions, makeBundle, parseOverrides, select} from './common.mjs';
+import {ROOT, chromiumOptions, browserExecutable, makeBundle, parseOverrides, select} from './common.mjs';
 
 const atArg = process.argv.find((a) => a.startsWith('--at='));
 const scenesArg = process.argv.find((a) => a.startsWith('--scenes='));
@@ -20,7 +20,7 @@ const frameArg = process.argv.find((a) => a.startsWith('--frame='));
 if (frameArg) {
   const f = frameArg.slice(8) === 'last' ? comp.durationInFrames - 1 : Number(frameArg.slice(8));
   const file = path.join(outDir, `frame-${f}.png`);
-  await renderStill({composition: comp, serveUrl, output: file, frame: f, inputProps: comp.props, chromiumOptions, overwrite: true});
+  await renderStill({composition: comp, serveUrl, output: file, frame: f, inputProps: comp.props, chromiumOptions, browserExecutable, overwrite: true});
   console.log(`frame ${f} → ${path.relative(ROOT, file)}`);
   process.exit(0);
 }
@@ -31,7 +31,7 @@ for (const i of wanted) {
     const frame = Math.min(comp.durationInFrames - 1, s.startFrame + Math.round(at * (s.durationInFrames - 1)));
     const file = path.join(outDir, `scene-${String(i + 1).padStart(2, '0')}-${Math.round(at * 100)}${guide ? '-gids' : ''}.png`);
     const t0 = Date.now();
-    await renderStill({composition: comp, serveUrl, output: file, frame, inputProps: comp.props, chromiumOptions, overwrite: true});
+    await renderStill({composition: comp, serveUrl, output: file, frame, inputProps: comp.props, chromiumOptions, browserExecutable, overwrite: true});
     console.log(`scène ${i + 1} @${at} → frame ${frame} → ${path.relative(ROOT, file)} (${Date.now() - t0} ms)`);
   }
 }

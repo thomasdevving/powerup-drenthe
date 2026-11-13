@@ -14,7 +14,7 @@ export const WIDTH = 1920;
 export const HEIGHT = 1080;
 
 /** Spreektempo voor de standaardduur. */
-export const WORDS_PER_SECOND = 2.3;
+export const WORDS_PER_SECOND = 2.6;
 /** Ademruimte aan begin én eind van elke scène (zonder nieuwe informatie). */
 export const PADDING_SECONDS = 0.5;
 /** Eindkaart die na de laatste scène blijft staan (geen VO). Zet op 0 om weg te laten. */
@@ -51,11 +51,11 @@ export type SceneDef = {
 export const SCENES: SceneDef[] = [
   {
     id: 'uitdaging',
-    audioFile: 'vo/scene-01.wav',
+    audioFile: 'vo/compact/scene-01.wav',
     title: 'De uitdaging van vandaag',
-    vo: 'Drenthe heeft honderdtwintig bedrijventerreinen. Bedrijven willen groeien en verduurzamen, maar het elektriciteitsnet zit vol. Uitbreidingen worden uitgesteld en nieuwe ontwikkelingen lopen vast.',
+    vo: 'Drentse bedrijven willen groeien en verduurzamen, maar het elektriciteitsnet zit vol. Uitbreidingen en nieuwe ontwikkelingen lopen vast.',
     keywords: [
-      {text: '120 bedrijventerreinen', cue: 'honderdtwintig'},
+      {text: 'Drenthe wil vooruit', cue: 'Drentse'},
       {text: 'Net vol', cue: 'elektriciteitsnet'},
       {text: 'Groei loopt vast', cue: 'Uitbreidingen'},
     ],
@@ -64,53 +64,53 @@ export const SCENES: SceneDef[] = [
   },
   {
     id: 'groter-probleem',
-    audioFile: 'vo/scene-02.wav',
+    audioFile: 'vo/compact/scene-02.wav',
     title: 'Het echte probleem is groter',
-    vo: 'Maar netcongestie is slechts één van de uitdagingen. Bedrijventerreinen krijgen ook te maken met elektrificatie, hittestress, wateroverlast en een groeiende behoefte aan ruimte. Daarom moeten we verder kijken dan alleen het elektriciteitsnet.',
-    keywords: [{text: 'Meer dan netcongestie', cue: 'Daarom'}],
+    vo: 'Naast netcongestie vragen elektrificatie, hittestress, wateroverlast en ruimte om een integrale aanpak.',
+    keywords: [{text: 'Meer dan netcongestie', cue: 'Naast'}],
     visual:
       'Luchtbeeld van het terrein. Eén voor één verschijnen de problemen: overbelaste kabels, vrachtwagens die laadvoorzieningen nodig hebben, een hittewaas boven asfalt en daken, plassen bij hevige regen, en een pand dat niet kan uitbreiden. Ze komen samen in één beeld.',
   },
   {
     id: 'visie',
-    audioFile: 'vo/scene-03.wav',
+    audioFile: 'vo/compact/scene-03.wav',
     title: 'Onze visie',
-    vo: 'Daarom kijken wij niet alleen naar het oplossen van netcongestie. Wij ontwerpen het bedrijventerrein van de toekomst: slimmer, groener, efficiënter en gezamenlijk georganiseerd.',
+    vo: 'Wij kijken vooruit en ontwerpen het bedrijventerrein van de toekomst: slimmer, groener, efficiënter en gezamenlijk georganiseerd.',
     keywords: [],
     visual:
       'Het omslagmoment. De camera stijgt boven het terrein uit, de rode probleemindicatoren verdwijnen en het wordt dag. Centraal: "Niet alleen het energieprobleem oplossen. Het bedrijventerrein voorbereiden op de toekomst." Daarna: slimmer · groener · efficiënter · samen.',
   },
   {
     id: 'energy-hub',
-    audioFile: 'vo/scene-04.wav',
+    audioFile: 'vo/compact/scene-04.wav',
     title: 'De slimme Energy Hub',
-    vo: 'Met een gezamenlijke Energy Hub benutten bedrijven de beschikbare energie slimmer. Lokale opwekking, opslag en afgestemde laad- en productiemomenten helpen stroompieken te beperken en maken ruimte voor nieuwe activiteiten.',
+    vo: 'De Energy Hub brengt ons van vraaggestuurde naar aanbodgestuurde energielevering. We stemmen flexibel laden en produceren af op beschikbare opwek en netruimte. Lokale opslag helpt stroompieken beperken.',
     keywords: [
-      {text: 'Gezamenlijke Energy Hub', cue: 'gezamenlijke'},
-      {text: 'Lokaal opwekken en opslaan', cue: 'Lokale'},
+      {text: 'Van vraag- naar aanbodgestuurd', cue: 'vraaggestuurde'},
+      {text: 'Gebruik volgt beschikbaar aanbod', cue: 'flexibel'},
       {text: 'Pieken beperken', cue: 'stroompieken'},
     ],
     visual:
-      'De Energy Hub met batterijen rijst op. Eén kabel van de netaansluiting ("levert zoals afgesproken"), een smart grid naar alle panden, zonnepanelen klappen open, windturbine en zonnepark leveren mee. De batterij laadt en vangt een piek op. Daarna vliegt de camera naar het realtime dashboard: piek afgevlakt, minimum per bedrijf, verbruik geschoven.',
+      'De Energy Hub met batterijen rijst op. In beeld: “Van vraaggestuurd naar aanbodgestuurd”; flexibel laden en produceren schuiven naar beschikbare opwek en netruimte. Eén kabel van de netaansluiting ("levert zoals afgesproken"), een smart grid naar alle panden, zonnepanelen klappen open, windturbine en zonnepark leveren mee. De batterij laadt en vangt een piek op. Daarna vliegt de camera naar het dashboard met elektriciteit, warmte en koude uit het gedeelde kwartiermodel; onderaan de berekende gevraagde netpiek per scenario.',
   },
   {
     id: 'warmtenet',
-    audioFile: 'vo/scene-05.wav',
-    title: 'Een lokaal warmtenet',
-    vo: 'Ook warmte krijgt een nieuwe waarde. Restwarmte uit bedrijfsprocessen en installaties kan via een lokaal warmtenet worden benut om andere gebouwen te verwarmen. Zo gebruiken we beschikbare energie efficiënter en verminderen we waar mogelijk de behoefte aan nieuwe energie.',
+    audioFile: 'vo/compact/scene-05.wav',
+    title: 'Elektriciteit, warmte en koude',
+    vo: 'Maar er is meer dan elektriciteit. Koelinstallaties leveren ook restwarmte. Via een lokaal warmtenet en een warmtepomp kan die andere gebouwen verwarmen. De warmtepomp gebruikt stroom; het dashboard rekent die mee. Een warmtebuffer bewaart overschotten voor later. Blauw toont koude, oranje warmte. Warmte-koudeopslag blijft een locatieafhankelijke optie.',
     keywords: [
-      {text: 'Restwarmte benutten', cue: 'Restwarmte'},
+      {text: 'Restwarmte benutten', cue: 'restwarmte'},
       {text: 'Lokaal warmtenet', cue: 'warmtenet'},
-      {text: 'Minder nieuwe energie nodig', cue: 'verminderen'},
+      {text: 'Warmte bewaren voor later', cue: 'warmtebuffer'},
     ],
     visual:
-      'Inzoomen op de metaalbewerking en het koelhuis: restwarmte stijgt op en gaat verloren. Dan wordt een ondergronds leidingnet zichtbaar; oranje warmte stroomt via een warmtepomp en warmtebuffer naar kantoren en andere panden. Een warmtekaart in het dashboard toont restwarmte benut van 0% naar ruim de helft. Klein in beeld: haalbaarheid hangt af van temperatuur, afstand, aanbod en vraag.',
+      'Inzoomen op de metaalbewerking en het koelhuis: restwarmte stijgt op en gaat verloren. Dan wordt een ondergronds leidingnet zichtbaar; oranje warmte stroomt via een warmtepomp en warmtebuffer naar kantoren en andere panden. Het dashboard toont berekende warmte, koude, warmtepompstroom en begrensde opslag uit hetzelfde kwartiermodel als de applicatie; geen vaste besparingspercentages. Blauwe leidingen tonen koude en de koppeling met warmteterugwinning. De buffer laadt overdag en ontlaadt later. WKO: optioneel en locatieafhankelijk. Klein in beeld: haalbaarheid hangt af van temperatuur, afstand, aanbod en vraag.',
   },
   {
     id: 'ruimte',
-    audioFile: 'vo/scene-06.wav',
+    audioFile: 'vo/compact/scene-06.wav',
     title: 'Ruimtelijke transformatie',
-    vo: 'Ook de ruimte richten we anders in. Groene daken, bomen en waterberging maken het terrein klimaatbestendiger. Gedeelde laadpleinen met zonnepanelen combineren mobiliteit, energieopwekking en efficiënt ruimtegebruik.',
+    vo: 'Groene daken, bomen en waterberging maken het terrein klimaatbestendiger. Gedeelde laadpleinen met zonnepanelen combineren mobiliteit en efficiënt ruimtegebruik.',
     keywords: [
       {text: 'Groen en waterberging', cue: 'Groene'},
       {text: 'Gedeeld laadplein', cue: 'Gedeelde'},
@@ -120,20 +120,20 @@ export const SCENES: SceneDef[] = [
   },
   {
     id: 'haulerwijk',
-    audioFile: 'vo/scene-07.wav',
+    audioFile: 'vo/compact/scene-07.wav',
     title: 'Praktijkvoorbeeld Haulerwijk',
-    vo: 'Dat bedrijven willen samenwerken, zien we al in Haulerwijk. Daar onderzoeken vier ondernemers met de gemeente hoe ze energie slimmer gebruiken, opwekken en opslaan. Wij werken dat principe uit tot één integraal concept.',
+    vo: 'Samenwerking zoals in Haulerwijk inspireert ons.',
     keywords: [],
     visual:
       'Infographic: vier bedrijfspanden, eerst elk los aan het net. Dan verschijnen verbindingen tussen de bedrijven en een gezamenlijke hub, duidelijk gelabeld als ons voorstel (toekomstbeeld), niet als bestaande installatie. Klein: "Geïnspireerd door het samenwerkingsinitiatief in Haulerwijk — Gemeente Ooststellingwerf, 2026."',
   },
   {
     id: 'cooperatie',
-    audioFile: 'vo/scene-08.wav',
+    audioFile: 'vo/compact/scene-08.wav',
     title: 'Samenwerking en eigenaarschap',
-    vo: 'De kracht zit in samenwerking. Via een coöperatie kunnen ondernemers gezamenlijk investeren, voorzieningen beheren en afspraken maken over hun energiegebruik. Zo ontstaat een bedrijventerrein dat niet alleen technisch, maar ook organisatorisch toekomstbestendig is.',
+    vo: 'Via een coöperatie investeren en beheren ondernemers samen, met afspraken over eigendom, kosten en energiegebruik.',
     keywords: [
-      {text: 'Samen investeren', cue: 'investeren,'},
+      {text: 'Samen investeren', cue: 'investeren'},
       {text: 'Samen beheren', cue: 'beheren'},
       {text: 'Samen afspraken maken', cue: 'afspraken'},
     ],
@@ -142,36 +142,36 @@ export const SCENES: SceneDef[] = [
   },
   {
     id: 'voordelen',
-    audioFile: 'vo/scene-09.wav',
+    audioFile: 'vo/compact/scene-09.wav',
     title: 'Economische en maatschappelijke voordelen',
-    vo: 'Het resultaat is meer dan een slimmer energiesysteem. We creëren ruimte voor economische ontwikkeling, beperken verspilling en maken bedrijventerreinen groener, aantrekkelijker en beter voorbereid op de toekomst.',
+    vo: 'Zo creëren we minder verspilling, groenere ruimte en betere voorwaarden voor economische ontwikkeling.',
     keywords: [],
     visual:
-      'Vergelijking: links het traditionele bedrijventerrein, rechts het toekomstbestendige terrein, elk met vijf korte punten en iconen.',
+      'Vergelijking: links het traditionele bedrijventerrein, rechts het toekomstbestendige terrein, elk met drie korte punten en iconen, over de bestaande geanimeerde 3D-wereld.',
   },
   {
     id: 'risicos',
-    audioFile: 'vo/scene-10.wav',
+    audioFile: 'vo/compact/scene-10.wav',
     title: 'Risico\'s en uitvoerbaarheid',
-    vo: 'Natuurlijk zijn er uitdagingen. Leveringszekerheid, regelgeving, financiering en samenwerking vragen om duidelijke afspraken. En soms blijft netverzwaring noodzakelijk. Daarom stellen we een gefaseerde aanpak voor, waarin technische haalbaarheid, risico\'s en kosten vanaf het begin worden meegenomen.',
+    vo: 'Leveringszekerheid, regelgeving, financiering en samenwerking vragen een gefaseerde aanpak. Warmte-uitwisseling vereist geschikte bronnen, afnemers, temperatuur, afstand en financiële haalbaarheid. Soms blijft netverzwaring noodzakelijk.',
     keywords: [],
     visual:
-      '"Een toekomstbestendig bedrijventerrein vraagt ook om realistische keuzes." Vijf kaarten verschijnen één voor één, elk met icoon, risico en beheersmaatregel: leveringszekerheid, regelgeving, financiering, samenwerking en grenzen van de netcapaciteit. Daarna drie fases van de gefaseerde aanpak.',
+      '"Een toekomstbestendig bedrijventerrein vraagt ook om realistische keuzes." Drie compacte kaarten: zekerheid en afspraken, technische haalbaarheid, gefaseerd investeren. Contracten, financiële haalbaarheid en netverzwaring blijven expliciet in beeld.',
   },
   {
     id: 'afsluiter',
-    audioFile: 'vo/scene-11.wav',
+    audioFile: 'vo/compact/scene-11.wav',
     title: 'Definitieve afsluiter',
-    vo: 'Onze ambitie is niet alleen om het elektriciteitsnet slimmer te benutten. Wij willen bedrijventerreinen voorbereiden op de toekomst. Met slimme energie, gedeelde warmte, groene ruimte en samenwerking. Vandaag in Drenthe, morgen in heel Nederland.',
+    vo: 'Met slimme energie, gedeelde warmte, groene ruimte en samenwerking bereiden we bedrijventerreinen voor op de toekomst. Vandaag in Drenthe, morgen in Nederland.',
     keywords: [],
     visual:
       'De camera stijgt op boven het volledig getransformeerde terrein: Energy Hub, opwek en opslag, warmtenet, groen, waterberging, laadplein en samenwerkende bedrijven. Vier pijlers verschijnen. Uitzoomen naar Drenthe, waar de terreinen oplichten, en naar Nederland. Eindkaart: ENERGY HUB · Het bedrijventerrein van de toekomst · Energiek Innovatie Collectief · PowerUp Drenthe Hackathon 2026.',
   },
   {
     id: 'team',
-    audioFile: 'vo/scene-12.wav',
+    audioFile: 'vo/compact/scene-12.wav',
     title: 'Het team',
-    vo: 'Wij zijn het Energiek Innovatie Collectief: kennis van AI, energietransitie, ruimtelijke planning en techniek, samen in één team.',
+    vo: 'Wij zijn het Energiek Innovatie Collectief: samen voor de toekomst.',
     keywords: [],
     visual:
       'Over de kaart van Nederland verschijnen vier teamkaarten, één per expertise: Thomas Nguyen (AI & data), Catharina Meter (energietransitie & verandermanagement), Gerhard Hulshoff (ruimtelijke planning) en Martin Hoogenboom (techniek & energiecoöperatie). Daarna de eindkaart.',

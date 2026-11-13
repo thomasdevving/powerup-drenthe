@@ -4,12 +4,12 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import {openBrowser} from '@remotion/renderer';
-import {pathToFileURL} from 'node:url';
-import {ROOT} from './common.mjs';
+import {createServer} from 'node:http';
+import {ROOT, browserExecutable} from './common.mjs';
 
 const tl = JSON.parse(fs.readFileSync(path.join(ROOT, 'out/timeline.json'), 'utf8'));
 const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-const t = (sec) => `${Math.floor(sec / 60)}:${String(Math.floor(sec % 60)).padStart(2, '0')}`;
+const t = (sec) => `${Math.floor(sec / 60)}:${(sec % 60).toFixed(2).padStart(5, '0')}`;
 const s1 = (x) => x.toFixed(1).replace('.', ',');
 const total = tl.totalFrames / tl.fps;
 const outro = tl.outroFrames / tl.fps;
@@ -54,6 +54,11 @@ const html = `<!doctype html>
   * { box-sizing: border-box; }
   body { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; color: #14212b; margin: 0; font-size: 10.5pt; line-height: 1.45; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   .cover h1 { font-size: 26pt; line-height: 1.1; margin: 0 0 4pt; letter-spacing: -0.4pt; }
+  .cover { font-size: 9pt; line-height: 1.3; }
+  .cover table { font-size: 8.5pt; }
+  .cover td { padding: 3pt 4pt; }
+  .cover .mono { font-size: 7.8pt; }
+  .cover ol.how li { margin: 1.5pt 0; }
   .cover .sub { color: #51606d; font-size: 11.5pt; margin-bottom: 14pt; }
   .stats { display: flex; gap: 8pt; margin: 0 0 14pt; }
   .stat { flex: 1; background: #eef6f5; border-radius: 8pt; padding: 8pt 10pt; }
@@ -86,20 +91,20 @@ const html = `<!doctype html>
 </style></head>
 <body>
   <section class="cover">
-    <h1>Draaiboek voice-over<br>Energy Hub</h1>
+    <h1>Script &amp; draaiboek<br>Multi-Commodity Energy Hub</h1>
     <div class="sub">Pitchvideo PowerUp Drenthe Hackathon 2026 · Track 3 · Energiek Innovatie Collectief</div>
     <div class="stats">
       <div class="stat"><b>${tl.scenes.length}</b><span>opnames, één per scène</span></div>
-      <div class="stat"><b>${t(total)}</b><span>totale videoduur (standaardtempo)</span></div>
+      <div class="stat"><b>${t(total)}</b><span>totale videoduur (actuele opnames)</span></div>
       <div class="stat"><b>48 kHz</b><span>WAV, mono of stereo</span></div>
     </div>
-    <h3>Zo neem je op</h3>
+    <p class="note">Deze versie bevat een Nederlandse synthetische voice-over (Maarten), opgeslagen in public/vo/compact/. Bestaande opnames blijven behouden. De PDF bevat de exacte gesproken tekst, actuele tijdcodes en beeldinstructies.</p><h3>Zo neem je op</h3>
     <ol class="how">
       <li><b>Per scène een apart bestand.</b> Zo kun je één scène overdoen zonder de rest.</li>
       <li><b>Formaat:</b> WAV, 48 kHz, 24-bit (16-bit mag ook).</li>
       <li><b>Stilte:</b> laat ongeveer <b>0,3 s stilte vóór en na</b> je tekst staan. Knip niet strak af.</li>
-      <li><b>Bestandsnaam:</b> precies zoals hieronder, in de map <span class="mono">public/vo/</span>.</li>
-      <li><b>Tempo:</b> de doelduur gaat uit van ±2,3 woorden per seconde. Spreek je rustiger, dan wordt de video vanzelf langer. Je hoeft niet te haasten.</li>
+      <li><b>Bestandsnaam:</b> precies zoals hieronder, in de map <span class="mono">public/vo/compact/</span>.</li>
+      <li><b>Tempo:</b> de doelduur gaat uit van de actuele opnames. De volledige video moet onder 120 seconden blijven; de render controleert deze grens.</li>
       <li><b>Meekijken:</b> speel <span class="mono">out/pitch-vo-gids.mp4</span> af: scènenummer linksboven, tekst onderin met een gele markering waar je zou moeten zijn.</li>
       <li><b>Daarna:</b> <span class="mono">npm run render</span> maakt de video opnieuw, nu met jouw stem.</li>
     </ol>
@@ -112,18 +117,31 @@ const html = `<!doctype html>
     <div class="note">Doelduur = spreektijd + 1 s ademruimte (0,5 s aan begin en eind van de scène). Elke zin staat in het draaiboek op een eigen regel: adem tussen de regels.</div>
   </section>
   <div class="scenes">${scenes}
-    <div class="end">Na scène ${tl.scenes.length} volgt de eindkaart (${s1(outro)} s, geen voice-over). Opnames in <span class="mono">public/vo/</span>, daarna <span class="mono">npm run render</span>.</div>
+    <div class="end">Na scène ${tl.scenes.length} volgt de eindkaart (${s1(outro)} s, geen voice-over). Opnames in <span class="mono">public/vo/compact/</span>, daarna <span class="mono">npm run render</span>.</div>
   </div>
 </body></html>`;
 
-const htmlPath = path.join(ROOT, 'out/voiceover.html');
-const pdfPath = path.join(ROOT, 'VOICEOVER.pdf');
-fs.writeFileSync(htmlPath, html);
+const compact = process.argv.includes('--compact');
+const scriptHtml = `<!doctype html><html lang="nl"><head><meta charset="utf-8"><title>Pitchscript · Multi-Commodity Energy Hub</title><style>
+@page {size:A4; margin:14mm 17mm;} * {box-sizing:border-box;} body {font-family:Arial,Helvetica,sans-serif; color:#14212b; margin:0; font-size:10pt; line-height:1.35;}
+h1 {font-size:22pt; line-height:1.1; letter-spacing:-.5pt; margin:0 0 6pt;} .sub {font-size:9pt; color:#51606d; margin-bottom:10pt;}
+.stats {padding:8pt 10pt; background:#eef6f5; border-left:3pt solid #0b8e81; margin:10pt 0 12pt; print-color-adjust:exact;}
+.script-scene {break-inside:avoid; margin:0 0 5pt;} .script-scene h2 {font-size:10pt; margin:0 0 2pt; color:#0b6e64;} .time {font-weight:400; color:#51606d; margin-left:8pt; font-size:8.5pt;} .script-scene p {font-size:11pt; margin:0; line-height:1.35;} .end {font-size:8.5pt; color:#51606d; border-top:1pt solid #d4dbe0; padding-top:7pt;}
+</style></head><body><h1>Pitchscript<br>Multi-Commodity Energy Hub</h1><div class="sub">PowerUp Drenthe 2026 · Track 3 · Energiek Innovatie Collectief</div>
+<div class="stats"><b>${s1(total)} seconden inclusief ${s1(outro)} s eindkaart · ${tl.scenes.reduce((n, s) => n + s.vo.trim().split(/\s+/).length, 0)} woorden</b><br>Alleen onderstaande alinea’s worden uitgesproken. Kopjes en tijdcodes zijn leesaanwijzingen.</div>
+${tl.scenes.map((s, i) => `<section class="script-scene"><h2>${String(i + 1).padStart(2, '0')} · ${esc(s.title)}<span class="time">${t(s.startFrame / tl.fps)}–${t((s.startFrame + s.durationInFrames) / tl.fps)}</span></h2><p>${esc(s.vo)}</p></section>`).join('')}
+</body></html>`;
+const printHtml = compact ? scriptHtml : html;
+const htmlPath = path.join(ROOT, compact ? 'out/script.html' : 'out/voiceover.html');
+const pdfPath = path.join(ROOT, compact ? 'SCRIPT.pdf' : 'VOICEOVER.pdf');
+fs.writeFileSync(htmlPath, printHtml);
 // Afdrukken via de headless Chrome van Remotion (DevTools: Page.printToPDF)
-const browser = await openBrowser('chrome', {chromiumOptions: {gl: 'swangle'}});
+const browser = await openBrowser('chrome', {chromiumOptions: {gl: 'swangle'}, browserExecutable});
+const server = createServer((_req, res) => {res.setHeader('Content-Type', 'text/html; charset=utf-8'); res.end(printHtml);});
+await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
 try {
   const page = await browser.newPage({context: () => null, logLevel: 'error', indent: false, pageIndex: 0, onBrowserLog: null, onLog: () => {}});
-  await page.goto({url: pathToFileURL(htmlPath).href, timeout: 30000});
+  await page.goto({url: `http://127.0.0.1:${server.address().port}/`, timeout: 30000});
   await page.evaluate(() => document.fonts.ready);
   const res = await page._client().send('Page.printToPDF', {
     printBackground: true,
@@ -132,6 +150,7 @@ try {
   });
   fs.writeFileSync(pdfPath, Buffer.from(res.value.data, 'base64'));
 } finally {
+  server.close();
   await browser.close({silent: true});
 }
 console.log(`✓ ${path.relative(ROOT, pdfPath)}`);

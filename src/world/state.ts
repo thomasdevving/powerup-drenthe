@@ -1,3 +1,4 @@
+import type {EnergyStep} from '../energy/model';
 import type {Story} from '../timeline';
 import {SCENES, cueFraction, sceneIndex} from '../script';
 import {clamp01, easeOut, inOut, seg} from '../util';
@@ -58,15 +59,15 @@ export const worldState = (st: Story) => {
 
   // ---- 4. De slimme Energy Hub
   const H = 'energy-hub';
-  const hubRise = seg(c(H), cue(H, 'Energy') - 0.08, cue(H, 'Energy') + 0.06, easeOut);
-  const supplyCable = seg(c(H), cue(H, 'gezamenlijke') - 0.02, cue(H, 'Hub') + 0.06);
-  const ring = seg(c(H), cue(H, 'benutten'), cue(H, 'slimmer.'), lin);
-  const solarOpen = seg(c(H), cue(H, 'Lokale') - 0.03, cue(H, 'Lokale') + 0.06);
-  const turbine = seg(c(H), cue(H, 'opwekking,') - 0.03, cue(H, 'opwekking,') + 0.06, easeOut);
-  const parkLink = seg(c(H), cue(H, 'opwekking,'), cue(H, 'opslag') + 0.02);
-  const charge = seg(c(H), cue(H, 'opslag') - 0.03, cue(H, 'afgestemde'));
-  const peak = seg(c(H), cue(H, 'afgestemde') - 0.02, cue(H, 'afgestemde') + 0.03) * (1 - seg(s, at(H, 0.72), at(H, 0.8)));
-  const discharge = seg(c(H), cue(H, 'productiemomenten') - 0.02, cue(H, 'stroompieken'));
+  const hubRise = seg(c(H), 0.0, 0.12, easeOut);
+  const supplyCable = seg(c(H), 0.08, 0.20);
+  const ring = seg(c(H), 0.15, 0.28, lin);
+  const solarOpen = seg(c(H), 0.25, 0.35);
+  const turbine = seg(c(H), 0.29, 0.40, easeOut);
+  const parkLink = seg(c(H), 0.30, 0.45);
+  const charge = seg(c(H), 0.35, 0.55);
+  const peak = seg(c(H), 0.52, 0.60) * (1 - seg(c(H), 0.72, 0.80));
+  const discharge = seg(c(H), 0.58, 0.70);
   const battery =
     s < at(H, 0) ? 0.15 : s >= at('warmtenet', 0) ? 0.62 + 0.18 * seg(c('warmtenet'), 0, 1) : clamp01(0.15 + charge * 0.75 - discharge * 0.35);
   const gridOn = Math.max(ring, s >= at('warmtenet', 0) ? 1 : 0);
@@ -75,15 +76,16 @@ export const worldState = (st: Story) => {
 
   // ---- 5. Lokaal warmtenet
   const W = 'warmtenet';
-  const heatWaste = inOut(c(W), 0.0, 0.08, cue(W, 'warmtenet') + 0.04, cue(W, 'warmtenet') + 0.2);
-  const heatNet = seg(c(W), cue(W, 'lokaal') - 0.04, cue(W, 'warmtenet') + 0.1, lin);
-  const heatStation = seg(c(W), cue(W, 'warmtenet') - 0.04, cue(W, 'warmtenet') + 0.06, easeOut);
-  const heatFlow = seg(c(W), cue(W, 'benut') - 0.02, cue(W, 'gebouwen') + 0.04);
-  const heatSinks = seg(c(W), cue(W, 'gebouwen'), cue(W, 'verwarmen.') + 0.05);
-  const heatCard = seg(c(W), cue(W, 'benut') - 0.02, cue(W, 'benut') + 0.06) * (1 - seg(s, at(W, 0.97), at('ruimte', 0.05)));
-  const heatRecovered = seg(c(W), cue(W, 'benut'), cue(W, 'efficiënter'));
-  const wasteLabel = inOut(c(W), 0.05, 0.12, cue(W, 'lokaal') - 0.04, cue(W, 'lokaal') + 0.04);
-  const stationLabel = inOut(c(W), cue(W, 'warmtenet'), cue(W, 'warmtenet') + 0.06, 0.96, 1.0);
+  const heatWaste = inOut(c(W), 0.0, 0.08, 0.22, 0.32);
+  const heatNet = seg(c(W), 0.20, 0.40, lin);
+  const heatStation = seg(c(W), 0.28, 0.40, easeOut);
+  const heatFlow = seg(c(W), 0.32, 0.48);
+  const heatSinks = seg(c(W), 0.40, 0.52);
+  const heatCard = seg(c(W), 0.42, 0.49) * (1 - seg(s, at(W, 0.99), at('ruimte', 0.04)));
+  const heatRecovered = seg(c(W), 0.45, 0.93, lin);
+  const coldNet = seg(c(W), 0.14, 0.30);
+  const wasteLabel = inOut(c(W), 0.05, 0.12, 0.22, 0.30);
+  const stationLabel = inOut(c(W), 0.28, 0.34, 0.43, 0.49);
 
   // ---- 6. Ruimtelijke transformatie
   const R = 'ruimte';
@@ -120,10 +122,12 @@ export const worldState = (st: Story) => {
   const endTitle = st.outro > 0 ? seg(st.outro, 0, 0.2) : 0;
 
   return {
+    energyStep: undefined as EnergyStep | undefined,
+    thermalCapacity: 600,
     dusk, congestion, jam, growTry, growStop, ghost, queue, bounce, inset, insetRed,
     pills, trucksIn, heat: clamp01(heat), puddles, rain, dim,
     hubRise, supplyCable, ring, solarOpen, turbine, parkLink, charge, peak, discharge, battery, gridOn, dash, dashP,
-    heatWaste, heatNet, heatStation, heatFlow, heatSinks, heatCard, heatRecovered, wasteLabel, stationLabel,
+    heatWaste, heatNet, heatStation, heatFlow, heatSinks, heatCard, heatRecovered, coldNet, wasteLabel, stationLabel,
     growOk, green, cool, laadplein, laadSolar, truckMove, laadLabel,
     haulerwijk, hwOurs, coop, coopCard, split, risks,
     map, localFade, sitesLit, nlLit, endTitle,

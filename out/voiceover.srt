@@ -1,207 +1,136 @@
 1
-00:00:00,500 --> 00:00:02,199
-Drenthe heeft honderdtwintig
-bedrijventerreinen.
-
-2
-00:00:02,239 --> 00:00:06,548
-Bedrijven willen groeien en verduurzamen,
+00:00:00,500 --> 00:00:05,248
+Drentse bedrijven willen groeien en verduurzamen,
 maar het elektriciteitsnet zit vol.
 
+2
+00:00:05,288 --> 00:00:07,860
+Uitbreidingen en nieuwe
+ontwikkelingen lopen vast.
+
 3
-00:00:06,588 --> 00:00:10,027
-Uitbreidingen worden uitgesteld en
-nieuwe ontwikkelingen lopen vast.
+00:00:08,900 --> 00:00:14,560
+Naast netcongestie vragen elektrificatie, hittestress,
+wateroverlast en ruimte om een integrale aanpak.
 
 4
-00:00:11,067 --> 00:00:14,502
-Maar netcongestie is slechts
-één van de uitdagingen.
-
-5
-00:00:14,542 --> 00:00:17,977
-Bedrijventerreinen krijgen ook te
-maken met elektrificatie, hittestress,
-
-6
-00:00:18,017 --> 00:00:21,017
-wateroverlast en een groeiende
-behoefte aan ruimte.
-
-7
-00:00:21,057 --> 00:00:24,927
-Daarom moeten we verder kijken
-dan alleen het elektriciteitsnet.
-
-8
-00:00:25,967 --> 00:00:30,274
-Daarom kijken wij niet alleen naar
-het oplossen van netcongestie.
-
-9
-00:00:30,314 --> 00:00:33,318
-Wij ontwerpen het
+00:00:15,600 --> 00:00:19,414
+Wij kijken vooruit en ontwerpen het
 bedrijventerrein van de toekomst:
 
-10
-00:00:33,358 --> 00:00:35,927
+5
+00:00:19,454 --> 00:00:21,727
 slimmer, groener, efficiënter
 en gezamenlijk georganiseerd.
 
+6
+00:00:22,767 --> 00:00:26,850
+De Energy Hub brengt ons van vraaggestuurde
+naar aanbodgestuurde energielevering.
+
+7
+00:00:26,890 --> 00:00:31,798
+We stemmen flexibel laden en produceren
+af op beschikbare opwek en netruimte.
+
+8
+00:00:31,838 --> 00:00:33,860
+Lokale opslag helpt stroompieken beperken.
+
+9
+00:00:34,900 --> 00:00:37,537
+Maar er is meer dan elektriciteit.
+
+10
+00:00:37,577 --> 00:00:39,321
+Koelinstallaties leveren ook restwarmte.
+
 11
-00:00:36,967 --> 00:00:41,706
-Met een gezamenlijke Energy Hub benutten
-bedrijven de beschikbare energie slimmer.
+00:00:39,361 --> 00:00:44,674
+Via een lokaal warmtenet en een warmtepomp
+kan die andere gebouwen verwarmen.
 
 12
-00:00:41,746 --> 00:00:42,575
-Lokale opwekking,
+00:00:44,714 --> 00:00:48,689
+De warmtepomp gebruikt stroom;
+het dashboard rekent die mee.
 
 13
-00:00:42,615 --> 00:00:49,527
-opslag en afgestemde laad- en productiemomenten helpen
-stroompieken te beperken en maken ruimte voor nieuwe activiteiten.
+00:00:48,729 --> 00:00:51,366
+Een warmtebuffer bewaart
+overschotten voor later.
 
 14
-00:00:50,567 --> 00:00:53,137
-Ook warmte krijgt een nieuwe waarde.
+00:00:51,406 --> 00:00:53,596
+Blauw toont koude, oranje warmte.
 
 15
-00:00:53,177 --> 00:00:56,617
-Restwarmte uit bedrijfsprocessen
-en installaties kan via een
+00:00:53,636 --> 00:00:55,827
+Warmte-koudeopslag blijft een
+locatieafhankelijke optie.
 
 16
-00:00:56,657 --> 00:01:00,533
-lokaal warmtenet worden benut om
-andere gebouwen te verwarmen.
-
-17
-00:01:00,573 --> 00:01:04,013
-Zo gebruiken we beschikbare
-energie efficiënter en verminderen
-
-18
-00:01:04,053 --> 00:01:07,493
-we waar mogelijk de behoefte
-aan nieuwe energie.
-
-19
-00:01:08,533 --> 00:01:11,536
-Ook de ruimte richten we anders in.
-
-20
-00:01:11,576 --> 00:01:15,447
+00:00:56,867 --> 00:01:01,110
 Groene daken, bomen en waterberging
 maken het terrein klimaatbestendiger.
 
-21
-00:01:15,487 --> 00:01:19,793
+17
+00:01:01,150 --> 00:01:05,393
 Gedeelde laadpleinen met zonnepanelen combineren
-mobiliteit, energieopwekking en efficiënt ruimtegebruik.
+mobiliteit en efficiënt ruimtegebruik.
+
+18
+00:01:06,433 --> 00:01:09,460
+Samenwerking zoals in
+Haulerwijk inspireert ons.
+
+19
+00:01:10,500 --> 00:01:13,713
+Via een coöperatie investeren
+en beheren ondernemers samen,
+
+20
+00:01:13,753 --> 00:01:16,560
+met afspraken over eigendom,
+kosten en energiegebruik.
+
+21
+00:01:17,600 --> 00:01:22,460
+Zo creëren we minder verspilling, groenere ruimte en
+betere voorwaarden voor economische ontwikkeling.
 
 22
-00:01:20,833 --> 00:01:24,702
-Dat bedrijven willen samenwerken,
-zien we al in Haulerwijk.
+00:01:23,500 --> 00:01:28,599
+Leveringszekerheid, regelgeving, financiering
+en samenwerking vragen een gefaseerde aanpak.
 
 23
-00:01:24,742 --> 00:01:29,915
-Daar onderzoeken vier ondernemers met de
-gemeente hoe ze energie slimmer gebruiken,
+00:01:28,639 --> 00:01:34,309
+Warmte-uitwisseling vereist geschikte bronnen, afnemers,
+temperatuur, afstand en financiële haalbaarheid.
 
 24
-00:01:29,955 --> 00:01:31,218
-opwekken en opslaan.
+00:01:34,349 --> 00:01:36,593
+Soms blijft netverzwaring noodzakelijk.
 
 25
-00:01:31,258 --> 00:01:35,127
-Wij werken dat principe uit
-tot één integraal concept.
+00:01:37,633 --> 00:01:39,525
+Met slimme energie, gedeelde warmte,
 
 26
-00:01:36,167 --> 00:01:38,298
-De kracht zit in samenwerking.
+00:01:39,565 --> 00:01:43,775
+groene ruimte en samenwerking bereiden we
+bedrijventerreinen voor op de toekomst.
 
 27
-00:01:38,338 --> 00:01:41,339
-Via een coöperatie kunnen
-ondernemers gezamenlijk investeren,
+00:01:43,815 --> 00:01:46,093
+Vandaag in Drenthe, morgen in Nederland.
 
 28
-00:01:41,379 --> 00:01:44,814
-voorzieningen beheren en afspraken
-maken over hun energiegebruik.
-
-29
-00:01:44,854 --> 00:01:50,460
-Zo ontstaat een bedrijventerrein dat niet alleen
-technisch, maar ook organisatorisch toekomstbestendig is.
-
-30
-00:01:51,500 --> 00:01:54,937
-Het resultaat is meer dan
-een slimmer energiesysteem.
-
-31
-00:01:54,977 --> 00:02:00,151
-We creëren ruimte voor economische ontwikkeling, beperken
-verspilling en maken bedrijventerreinen groener,
-
-32
-00:02:00,191 --> 00:02:03,193
-aantrekkelijker en beter
-voorbereid op de toekomst.
-
-33
-00:02:04,233 --> 00:02:05,934
-Natuurlijk zijn er uitdagingen.
-
-34
-00:02:05,974 --> 00:02:09,851
-Leveringszekerheid, regelgeving, financiering
-en samenwerking vragen om duidelijke afspraken.
-
-35
-00:02:09,891 --> 00:02:12,027
-En soms blijft netverzwaring noodzakelijk.
-
-36
-00:02:12,067 --> 00:02:16,379
-Daarom stellen we een gefaseerde aanpak
-voor, waarin technische haalbaarheid,
-
-37
-00:02:16,419 --> 00:02:19,860
-risico's en kosten vanaf het
-begin worden meegenomen.
-
-38
-00:02:20,900 --> 00:02:25,637
-Onze ambitie is niet alleen om het
-elektriciteitsnet slimmer te benutten.
-
-39
-00:02:25,677 --> 00:02:28,678
-Wij willen bedrijventerreinen
-voorbereiden op de toekomst.
-
-40
-00:02:28,718 --> 00:02:32,586
-Met slimme energie, gedeelde warmte,
-groene ruimte en samenwerking.
-
-41
-00:02:32,626 --> 00:02:35,627
-Vandaag in Drenthe,
-morgen in heel Nederland.
-
-42
-00:02:36,667 --> 00:02:39,238
+00:01:47,133 --> 00:01:49,393
 Wij zijn het Energiek
 Innovatie Collectief:
 
-43
-00:02:39,278 --> 00:02:44,460
-kennis van AI, energietransitie, ruimtelijke
-planning en techniek, samen in één team.
+29
+00:01:49,433 --> 00:01:50,927
+samen voor de toekomst.

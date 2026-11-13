@@ -5,7 +5,9 @@ import {defaultTimeline, storyAt, type Story} from '../../src/timeline';
 import {at, worldState} from '../../src/world/state';
 import {World} from '../../src/world/World';
 import {C} from '../../src/util';
-import {ZONES, type Mode, type Tone, type Zone} from './zones';
+import {DEFAULT_SETTINGS, DEFAULT_THERMAL, type Settings} from './demo/sim';
+import {compareScenarios} from '../../src/energy/model';
+import {ZONES, makeZones, type Mode, type Tone, type Zone} from './zones';
 
 const TL = defaultTimeline();
 // Story-time in de video: 'nu' = eind van 'het echte probleem is groter', 'hub' = alles getransformeerd (na coöperatie)
@@ -208,7 +210,9 @@ const Card: React.FC<{zone: Zone; mode: Mode; now: number; x: number; y: number;
   );
 };
 
-export const MapView: React.FC<{tabs: React.ReactNode}> = ({tabs}) => {
+export const MapView: React.FC<{tabs: React.ReactNode; settings?: Settings}> = ({tabs, settings = DEFAULT_SETTINGS}) => {
+  const zones = useMemo(() => makeZones(settings), [settings]);
+  const days = useMemo(() => compareScenarios(settings), [settings]);
   const now = useNow();
   const {w, h} = useSize();
   const [mode, setMode] = useState<Mode>('nu');
@@ -234,7 +238,18 @@ export const MapView: React.FC<{tabs: React.ReactNode}> = ({tabs}) => {
 
   const story = storyFor(s, now);
   const raw = worldState(story);
-  const ws = {...raw, dim: 0, dash: 0, map: 0, localFade: 0, heat: raw.heat * 0.5, rain: 0, coopCard: 0, heatCard: 0, dusk: Math.min(raw.dusk, 0.45)};
+  const thermal = {...DEFAULT_THERMAL, ...settings.thermal};
+  const energyDay = mode === 'nu' ? days[0] : days[thermal.enabled ? 2 : 1];
+  const energyStep = energyDay.steps[Math.floor(((6 + now * .9) % 24) * 4)];
+  const ws = {...raw, energyStep, thermalCapacity: thermal.bufferKwh,
+    battery: energyStep.soc,
+    heatNet: thermal.enabled ? raw.heatNet : 0,
+    heatStation: thermal.enabled ? raw.heatStation : 0,
+    heatFlow: energyStep.sourceUsed > .1 ? raw.heatFlow : 0,
+    heatSinks: energyStep.directHeat + energyStep.bufferDischarge > .1 ? raw.heatSinks : 0,
+    turbine: settings.wind ? raw.turbine : 0,
+    parkLink: settings.parkLink ? raw.parkLink : 0,
+    dim: 0, dash: 0, map: 0, localFade: 0, heat: raw.heat * 0.5, rain: 0, coopCard: 0, heatCard: 0, dusk: Math.min(raw.dusk, 0.45)};
 
   // Vaste camera: niets mag onder de cursor wegschuiven op een hover-kaart.
   const px = 0;
@@ -303,7 +318,7 @@ export const MapView: React.FC<{tabs: React.ReactNode}> = ({tabs}) => {
     document.body.style.cursor = hovered ? 'pointer' : 'default';
   }, [hovered]);
 
-  const zone = ZONES.find((z) => z.id === hovered && (!z.only || z.only === mode)) ?? null;
+  const zone = zones.find((z) => z.id === hovered && (!z.only || z.only === mode)) ?? null;
 
   const onTap = (e: React.PointerEvent) => {
     if (!touch) return;
@@ -386,6 +401,8 @@ export const MapView: React.FC<{tabs: React.ReactNode}> = ({tabs}) => {
           <span><i style={{background: C.grid}} />Smart grid</span>
           <span><i style={{background: C.solar}} />Zonne-energie</span>
           <span><i style={{background: C.gridGreen}} />Batterij &amp; groen</span>
+          <span><i style={{background: "#ff9d2e"}} />Warmte</span>
+          <span><i style={{background: "#65baff"}} />Koude</span>
         </div>
         <div className="credit">Energiek Innovatie Collectief · PowerUp Drenthe 2026 · indicatieve waarden</div>
       </footer>

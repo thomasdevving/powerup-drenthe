@@ -166,7 +166,7 @@ const Labels: React.FC<{story: Story; ws: WorldState; width: number; height: num
 
   // 5. warmte
   if (ws.wasteLabel > 0.001) {
-    const q = P([-20, 15, -13]);
+    const q = P([-5, 12, 13]);
     items.push(<Pin key="waste" x={q.x} y={q.y} o={ws.wasteLabel} color={HEAT} icon="flame" text="Restwarmte gaat verloren" dark />);
   }
   if (ws.stationLabel > 0.001) {

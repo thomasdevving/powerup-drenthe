@@ -14,4 +14,6 @@ web/deploy/
 # tijdelijke render-uitvoer (de eindvideo's en de SRT staan wél in de repo)
 out/stills/
 out/render.log
+out/render-progress.json
 out/voiceover.html
+out/script.html

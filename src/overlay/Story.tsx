@@ -5,6 +5,8 @@ import type {Story} from '../timeline';
 import {C, clamp01, easeOut, inOut, seg} from '../util';
 import type {WorldState} from '../world/state';
 import {Icon} from './Icons';
+import {pitchStep} from '../energy/pitch-data';
+import {DEFAULT_THERMAL, fmtTime} from '../energy/profiles';
 
 const FONT = 'Inter, system-ui, sans-serif';
 const HEAT = '#ff9d2e';
@@ -80,7 +82,9 @@ export const Rain: React.FC<{ws: WorldState; sec: number}> = ({ws, sec}) => {
 
 export const HeatCard: React.FC<{ws: WorldState}> = ({ws}) => {
   if (ws.heatCard <= 0.001) return null;
-  const used = 0.62 * ws.heatRecovered;
+  const x = pitchStep(ws.heatRecovered);
+  const used = x.heatDemand ? (x.directHeat + x.bufferDischarge) / x.heatDemand : 0;
+  const n = (v: number) => Math.round(v).toLocaleString('nl-NL');
   const row = (label: string, value: string, bar?: number, color = HEAT) => (
     <div style={{marginTop: 14}}>
       <div style={{display: 'flex', justifyContent: 'space-between', fontSize: 24}}>
@@ -100,11 +104,14 @@ export const HeatCard: React.FC<{ws: WorldState}> = ({ws}) => {
         <div style={{display: 'flex', alignItems: 'center', gap: 12, fontSize: 20, fontWeight: 800, letterSpacing: 2, textTransform: 'uppercase', color: HEAT}}>
           <Icon name="flame" color={HEAT} size={30} stroke={6} /> Dashboard · warmte
         </div>
-        {row('Restwarmte beschikbaar', '420 kW')}
-        {row('Benut via warmtenet', `${Math.round(used * 100)}%`, used)}
-        {row('Warmtepomp', '80 kW')}
-        {row('Warmtebuffer', `${Math.round(35 + 50 * ws.heatRecovered)}%`, 0.35 + 0.5 * ws.heatRecovered, '#ffc06b')}
-        <div style={{marginTop: 16, fontSize: 19, color: 'rgba(255,255,255,0.6)'}}>Zonder warmtenet: 0% benut</div>
+        <div style={{fontSize: 18, marginTop: 12, color: '#b4c4d1'}}>Illustratieve winterdag · {fmtTime(x.h)}</div>
+        {row('Bronwarmte', `${n(x.availableHeat)} kWth`)}
+        {row('Nuttig geleverd', `${n(x.directHeat + x.bufferDischarge)} kWth`, used)}
+        {row('Aanvullend nodig', `${n(x.backupHeat)} kWth`)}
+        {row('Pomp + circulatie', `${n(x.heatPumpElectric + x.pumpElectric)} kW stroom`)}
+        {row('Warmtebuffer', `${n(x.bufferKwh)} / ${DEFAULT_THERMAL.bufferKwh} kWhth`, x.bufferKwh / DEFAULT_THERMAL.bufferKwh, '#ffc06b')}
+        <div style={{marginTop: 14, fontSize: 20, color: '#65baff'}}>Koude: {n(x.coldDemand)} kWth · koeling {n(x.coolingElectric)} kW</div>
+        <div style={{marginTop: 12, fontSize: 18, color: '#b4c4d1'}}>WKO optioneel · locatieafhankelijk</div>
       </div>
       <div style={{position: 'absolute', right: 80, bottom: 46, fontFamily: FONT, fontSize: 21, color: 'rgba(255,255,255,0.8)', background: 'rgba(10,20,32,0.6)', padding: '8px 16px', borderRadius: 10, opacity: ws.heatCard}}>
         Indicatief · haalbaarheid hangt af van temperatuur, afstand, aanbod en vraag
@@ -123,73 +130,13 @@ const Building: React.FC<{x: number; y: number}> = ({x, y}) => (
   </g>
 );
 
-export const Haulerwijk: React.FC<{story: Story; ws: WorldState}> = ({story, ws}) => {
+export const Haulerwijk: React.FC<{story: Story; ws: WorldState}> = ({ws}) => {
   if (ws.haulerwijk <= 0.001) return null;
-  const ours = ws.hwOurs;
-  const chips = [
-    {w: 'gebruiken,', label: 'Slimme energieplanning', icon: 'flat'},
-    {w: 'opwekken', label: 'Lokale opwekking', icon: 'sun'},
-    {w: 'opslaan.', label: 'Energieopslag', icon: 'battery'},
-    {w: 'opslaan.', label: 'Energie delen', icon: 'loop'},
-  ];
-  const xs = [140, 330, 520, 710];
-  const top = 90;
-  const gridY = 330;
-  return (
-    <AbsoluteFill style={{background: `rgba(6, 10, 18, ${0.55 * ws.haulerwijk})`, alignItems: 'center', justifyContent: 'center', opacity: ws.haulerwijk}}>
-      <div style={{...panel, width: 1640, padding: '44px 52px 34px', display: 'flex', gap: 48}}>
-        <div style={{width: 640}}>
-          <div style={{fontSize: 24, fontWeight: 800, letterSpacing: 3, textTransform: 'uppercase', color: C.gridGreen}}>Praktijkvoorbeeld</div>
-          <div style={{fontSize: 64, fontWeight: 800, letterSpacing: -1.5, marginTop: 6}}>Haulerwijk</div>
-          <div style={{fontSize: 28, color: 'rgba(255,255,255,0.78)', marginTop: 10, lineHeight: 1.35}}>
-            Vier bedrijven en de gemeente Ooststellingwerf tekenden een intentieverklaring om samen te onderzoeken:
-          </div>
-          <div style={{display: 'flex', flexWrap: 'wrap', gap: 12, marginTop: 22}}>
-            {chips.map((c, i) => {
-              const a = at(story, 'haulerwijk', c.w, 0.04 - i * 0.0, 0.07 + (i === 3 ? 0.06 : 0));
-              return (
-                <div key={c.label} style={{opacity: a, transform: `translateY(${(1 - a) * 14}px)`, display: 'flex', alignItems: 'center', gap: 10, fontSize: 25, fontWeight: 700, padding: '10px 18px', borderRadius: 999, background: 'rgba(78,240,138,0.12)', border: '1px solid rgba(78,240,138,0.45)'}}>
-                  <Icon name={c.icon} color={C.gridGreen} size={30} stroke={6} />
-                  {c.label}
-                </div>
-              );
-            })}
-          </div>
-          <div style={{marginTop: 22, fontSize: 21, color: 'rgba(255,255,255,0.6)'}}>Status: onderzoeks- en planfase</div>
-        </div>
-        <div style={{flex: 1}}>
-          <svg width="100%" viewBox="0 0 850 420" style={{display: 'block'}}>
-            {/* net */}
-            <line x1={60} x2={790} y1={gridY} y2={gridY} stroke={ours > 0.5 ? '#8a98a6' : C.congestion} strokeWidth={6} strokeLinecap="round" />
-            <text x={790} y={gridY + 38} fill="rgba(255,255,255,0.7)" fontSize={22} textAnchor="end" fontFamily={FONT}>elektriciteitsnet</text>
-            {/* vandaag: ieder een eigen lijn */}
-            {xs.map((x) => (
-              <line key={x} x1={x} x2={x} y1={top + 30} y2={gridY} stroke="#8a98a6" strokeWidth={4} strokeDasharray="10 8" opacity={1 - 0.75 * ours} />
-            ))}
-            {/* ons voorstel: verbonden + hub */}
-            {ours > 0.01 ? (
-              <g opacity={ours}>
-                <path d={`M${xs[0]} ${top + 34} Q ${(xs[0] + xs[3]) / 2} ${top + 150} ${xs[3]} ${top + 34}`} fill="none" stroke={C.gridGreen} strokeWidth={4} />
-                {xs.map((x) => (
-                  <line key={x} x1={x} y1={top + 34} x2={425} y2={235} stroke={C.grid} strokeWidth={5} strokeDasharray={`${600 * ours} 600`} />
-                ))}
-                <line x1={425} y1={285} x2={425} y2={gridY} stroke={C.grid} strokeWidth={8} />
-                <rect x={305} y={205} width={240} height={82} rx={16} fill="#0e1a26" stroke={C.grid} strokeWidth={3} strokeDasharray="10 7" />
-                <text x={425} y={240} fill="white" fontSize={26} fontWeight={800} textAnchor="middle" fontFamily={FONT}>Energy Hub</text>
-                <text x={425} y={270} fill={C.grid} fontSize={19} fontWeight={800} textAnchor="middle" fontFamily={FONT}>ons voorstel · toekomstbeeld</text>
-              </g>
-            ) : null}
-            {xs.map((x) => (
-              <Building key={x} x={x} y={top} />
-            ))}
-          </svg>
-        </div>
-      </div>
-      <div style={{position: 'absolute', bottom: 44, fontFamily: FONT, fontSize: 22, color: 'rgba(255,255,255,0.75)'}}>
-        Geïnspireerd door het samenwerkingsinitiatief in Haulerwijk — Gemeente Ooststellingwerf, 2026.
-      </div>
-    </AbsoluteFill>
-  );
+  return <div style={{...panel, position: 'absolute', left: 110, bottom: 120, padding: '24px 36px', opacity: ws.haulerwijk}}>
+    <div style={{fontSize: 22, color: C.gridGreen, fontWeight: 800}}>VAN INITIATIEF NAAR UITVOERING</div>
+    <div style={{fontSize: 44, fontWeight: 800, marginTop: 10}}>Samenwerking zoals in Haulerwijk</div>
+    <div style={{fontSize: 23, marginTop: 10, color: '#c2cdd5'}}>Inspiratie voor ons toekomstconcept · geen bestaande installatie</div>
+  </div>;
 };
 
 /* ------------------------------------------------------------------ 8. coöperatie */
@@ -226,56 +173,21 @@ export const CoopCard: React.FC<{ws: WorldState}> = ({ws}) => {
 /* ------------------------------------------------------------------ 10. risico's */
 
 const RISKS = [
-  {w: 'Leveringszekerheid,', icon: 'shield', title: 'Leveringszekerheid', risk: 'Een storing raakt meerdere bedrijven', fix: 'Redundantie, noodvoorziening voor kritieke processen, eigen aansluiting waar verantwoord'},
-  {w: 'regelgeving,', icon: 'law', title: 'Regelgeving', risk: 'Eigen net en verrekening zijn juridisch begrensd', fix: 'Juridische structuur, belasting en meting vooraf regelen met de netbeheerder'},
-  {w: 'financiering', icon: 'euro', title: 'Financiering', risk: 'Hub, warmtenet en laadplein vragen investeringen', fix: 'Gefaseerd en gezamenlijk, met een businesscase per maatregel'},
-  {w: 'samenwerking', icon: 'hand', title: 'Samenwerking', risk: 'Belangen en budgetten verschillen', fix: 'Coöperatieve afspraken over eigendom, zeggenschap en verrekening'},
-  {w: 'netverzwaring', icon: 'cable', title: 'Netcapaciteit', risk: 'Slim verdelen maakt geen extra transportcapaciteit', fix: 'Bestaande capaciteit beter benutten, verzwaren waar nodig'},
+  {icon: 'shield', title: 'Zekerheid & afspraken', text: 'Leveringszekerheid, regelgeving en samenwerking vooraf regelen.'},
+  {icon: 'heat', title: 'Technische haalbaarheid', text: 'Bronnen, afnemers, temperatuur en afstand bepalen wat kan.'},
+  {icon: 'euro', title: 'Gefaseerd investeren', text: 'Businesscase per stap. Netverzwaring kan nodig blijven.'},
 ];
-
 export const Risks: React.FC<{story: Story; ws: WorldState}> = ({story, ws}) => {
   if (ws.risks <= 0.001) return null;
-  const head = seg(cp(story, 'risicos'), 0.0, 0.08, easeOut);
-  const phases = at(story, 'risicos', 'gefaseerde', 0.05, 0.1);
-  return (
-    <AbsoluteFill style={{background: `rgba(6, 10, 18, ${0.66 * ws.risks})`, opacity: ws.risks, fontFamily: FONT, color: 'white'}}>
-      <div style={{position: 'absolute', top: 92, left: 0, right: 0, textAlign: 'center', opacity: head, transform: `translateY(${(1 - head) * 20}px)`}}>
-        <div style={{fontSize: 24, fontWeight: 800, letterSpacing: 3, textTransform: 'uppercase', color: WARN}}>Risico’s en uitvoerbaarheid</div>
-        <div style={{fontSize: 46, fontWeight: 800, letterSpacing: -1, marginTop: 8}}>Een toekomstbestendig bedrijventerrein vraagt ook om realistische keuzes.</div>
-      </div>
-      <div style={{position: 'absolute', top: 290, left: 80, right: 80, display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 22}}>
-        {RISKS.map((r) => {
-          const a = at(story, 'risicos', r.w, 0.05, 0.08);
-          return (
-            <div key={r.title} style={{...panel, background: 'rgba(10, 20, 32, 0.9)', border: `1px solid ${WARN}55`, padding: '26px 24px 24px', opacity: a, transform: `translateY(${(1 - a) * 30}px)`}}>
-              <div style={{width: 76, height: 76, borderRadius: '50%', background: `${WARN}22`, border: `2px solid ${WARN}`, display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                <Icon name={r.icon} color={WARN} size={44} stroke={5} />
-              </div>
-              <div style={{fontSize: 32, fontWeight: 800, marginTop: 16, letterSpacing: -0.5}}>{r.title}</div>
-              <div style={{fontSize: 22, color: 'rgba(255,255,255,0.72)', marginTop: 8, lineHeight: 1.3, minHeight: 58}}>{r.risk}</div>
-              <div style={{fontSize: 17, fontWeight: 800, letterSpacing: 2, textTransform: 'uppercase', color: C.gridGreen, marginTop: 16}}>Aanpak</div>
-              <div style={{fontSize: 23, fontWeight: 600, marginTop: 6, lineHeight: 1.3}}>{r.fix}</div>
-              {r.title === 'Regelgeving' ? (
-                <div style={{marginTop: 14, display: 'flex', flexDirection: 'column', gap: 6, fontSize: 18, color: 'rgba(255,255,255,0.78)'}}>
-                  <span>● Bestaand terrein: individuele aansluitingen</span>
-                  <span>● Nieuw terrein: eigen infrastructuur onderzoeken</span>
-                </div>
-              ) : null}
-            </div>
-          );
-        })}
-      </div>
-      <div style={{position: 'absolute', bottom: 70, left: 0, right: 0, display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 14, opacity: phases, transform: `translateY(${(1 - phases) * 20}px)`}}>
-        <div style={{fontSize: 26, fontWeight: 800, marginRight: 8}}>Gefaseerde aanpak</div>
-        {['Fase 1 · Inzicht en afspraken', 'Fase 2 · Opslag, opwek en slim laden', 'Fase 3 · Warmtenet en ruimte'].map((t, i) => (
-          <React.Fragment key={t}>
-            {i > 0 ? <span style={{fontSize: 30, color: C.grid}}>→</span> : null}
-            <div style={{fontSize: 24, fontWeight: 700, padding: '12px 22px', borderRadius: 999, background: 'rgba(33,230,208,0.12)', border: `1px solid ${C.grid}88`}}>{t}</div>
-          </React.Fragment>
-        ))}
-      </div>
-    </AbsoluteFill>
-  );
+  const p = cp(story, 'risicos');
+  return <AbsoluteFill style={{background: 'rgba(6,10,18,.68)', opacity: ws.risks, fontFamily: FONT, color: 'white', padding: '160px 110px'}}>
+    <div style={{fontSize: 24, fontWeight: 800, letterSpacing: 3, color: WARN}}>RISICO’S EN UITVOERBAARHEID</div>
+    <div style={{fontSize: 60, fontWeight: 800, marginTop: 18, letterSpacing: -1.5}}>Realistische keuzes. Samen vooruit.</div>
+    <div style={{display: 'flex', gap: 28, marginTop: 70}}>{RISKS.map((r, i) => <div key={r.title} style={{...panel, flex: 1, padding: '36px 30px', opacity: seg(p, i * .12, i * .12 + .1)}}>
+      <Icon name={r.icon} color={WARN} size={52}/><div style={{fontSize: 34, fontWeight: 800, marginTop: 22}}>{r.title}</div><div style={{fontSize: 28, lineHeight: 1.4, color: '#c2cdd5', marginTop: 18}}>{r.text}</div>
+    </div>)}</div>
+    <div style={{fontSize: 25, marginTop: 48, color: C.gridGreen}}>Passende contracten · financiële haalbaarheid · geen automatische toestemming voor een eigen net</div>
+  </AbsoluteFill>;
 };
 
 /* ------------------------------------------------------------------ 11. pijlers */

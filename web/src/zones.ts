@@ -1,3 +1,5 @@
+import {compareScenarios} from '../../src/energy/model';
+import {COMPANIES, DEFAULT_SETTINGS, PARK_KWP, solarPerKwp, fmtTime, type Settings} from '../../src/energy/profiles';
 import {BUILDINGS, HUB, SOLAR_PARK, TRAFO, TURBINE, WADIS} from '../../src/world/layout';
 import {HEAT_STATION, LAADPLEIN} from '../../src/world/Future';
 
@@ -20,9 +22,6 @@ export type Zone = {
   hub?: ZoneText;
 };
 
-const wobble = (t: number, seed: number, amp: number) =>
-  amp * (Math.sin(t * 0.9 + seed * 1.7) * 0.6 + Math.sin(t * 2.3 + seed) * 0.4);
-
 const NAMES = [
   'Metaalbewerking',
   'Drukkerij',
@@ -33,10 +32,6 @@ const NAMES = [
   'Houtbewerking',
   'Autobedrijf',
 ];
-// indicatieve waarden in kW
-const BASE = [180, 70, 110, 140, 95, 260, 120, 80];
-const MIN = [120, 50, 70, 100, 70, 180, 80, 55];
-
 const NU_TEXT: Record<number, string> = {
   0: 'Wil een hal bijbouwen, maar krijgt geen zwaardere aansluiting. De uitbreiding staat stil.',
   2: 'Heeft zonnepanelen op het dak, maar terugleveren lukt niet: het net staat op rood.',
@@ -55,41 +50,25 @@ const buildingZone = (i: number): Zone => {
       kicker: NU_TEXT[i] ? 'Loopt vast' : 'Afhankelijk van een vol net',
       tone: NU_TEXT[i] ? 'red' : 'neutral',
       text: NU_TEXT[i] ?? 'Geen inzicht in het eigen verbruik. Elke extra machine is een nieuwe aanvraag in de wachtrij.',
-      stats: [{label: 'Aanvraag zwaardere aansluiting', value: () => 'in de wachtrij', tone: 'red'}],
+      stats: [],
     },
     hub: {
       kicker: i === 0 ? 'Groeit weer' : solar ? 'Verbruikt én wekt op' : 'Groen dak, slim verbruik',
       tone: 'cyan',
       text:
         i === 0
-          ? 'De nieuwe verdieping staat er. De ruimte komt uit slim verdelen binnen het terrein, niet uit verzwaren.'
+          ? 'Slim verdelen kan ontwikkeling ondersteunen. Het model toont resterende tekorten; netverzwaring kan nodig blijven.'
           : i === 5
             ? 'Pieken van de koelinstallatie worden opgevangen door de batterij van de Energy Hub.'
             : solar
               ? 'Zonnepanelen op het dak leveren aan het eigen smart grid. Overschot gaat naar buren of de batterij.'
               : 'Groen dak voor koeling en waterberging. Verbruik is realtime zichtbaar op het dashboard.',
-      stats: [
-        {
-          label: 'Verbruik nu',
-          value: (t) => `${Math.round(BASE[i] + wobble(t, i, BASE[i] * 0.12))} kW`,
-          tone: 'cyan',
-          bar: (t) => (BASE[i] + wobble(t, i, BASE[i] * 0.12)) / (BASE[i] * 1.4),
-        },
-        {label: 'Gegarandeerd minimum', value: () => `${MIN[i]} kW`, tone: 'green'},
-        ...(solar
-          ? [{label: 'Eigen opwek (zon)', value: (t: number) => `${Math.round(BASE[i] * 0.35 + wobble(t, i + 9, 8))} kW`, tone: 'yellow' as Tone}]
-          : []),
-        ...(i === 0 || i === 5
-          ? [{label: 'Restwarmte naar warmtenet', value: (t: number) => `${Math.round((i === 0 ? 150 : 140) + wobble(t, i + 3, 10))} kW`, tone: 'yellow' as Tone}]
-          : i === 1 || i === 6 || i === 7
-            ? [{label: 'Warmte uit warmtenet', value: (t: number) => `${Math.round(60 + wobble(t, i + 5, 8))} kW`, tone: 'yellow' as Tone}]
-            : []),
-      ],
+      stats: [],
     },
   };
 };
 
-export const ZONES: Zone[] = [
+const ZONE_LAYOUT: Zone[] = [
   {
     id: 'trafo',
     title: 'Netaansluiting',
@@ -99,13 +78,13 @@ export const ZONES: Zone[] = [
       kicker: 'Net vol',
       tone: 'red',
       text: 'Elk bedrijf heeft een eigen aansluiting. Aanvragen voor meer vermogen staan in de wachtrij bij de netbeheerder.',
-      stats: [{label: 'Aanvragen in de wachtrij', value: () => '7', tone: 'red'}],
+      stats: [],
     },
     hub: {
       kicker: 'Eén aansluiting',
       tone: 'cyan',
-      text: 'De leverancier levert één vaste, afgesproken hoeveelheid aan het hele terrein. Het terrein verdeelt die zelf.',
-      stats: [{label: 'Levering', value: () => 'zoals afgesproken', tone: 'cyan'}],
+      text: 'Gezamenlijk energiemanagement binnen de netlimiet, met passende contracten en wettelijke toetsing. Er komt geen fictieve netcapaciteit bij.',
+      stats: [],
     },
   },
   {
@@ -122,15 +101,7 @@ export const ZONES: Zone[] = [
       kicker: 'Hart van het smart grid',
       tone: 'green',
       text: 'Batterijen slaan overschot van zon en wind op en vangen pieken op. Via het ringnet bereikt de stroom elk pand.',
-      stats: [
-        {
-          label: 'Batterij',
-          value: (t) => `${Math.round(62 + 18 * Math.sin(t * 0.25))}%`,
-          tone: 'green',
-          bar: (t) => (62 + 18 * Math.sin(t * 0.25)) / 100,
-        },
-        {label: 'Status', value: (t) => (Math.cos(t * 0.25) > 0 ? 'laden ▲' : 'piek opvangen ▼'), tone: 'cyan'},
-      ],
+      stats: [],
     },
   },
   {
@@ -147,7 +118,7 @@ export const ZONES: Zone[] = [
       kicker: 'Nu wél verbonden',
       tone: 'yellow',
       text: 'Een directe kabel naar de Energy Hub. Zonnestroom gaat het terrein op of de batterij in.',
-      stats: [{label: 'Levert nu', value: (t) => `${Math.round(1450 + wobble(t, 3, 90))} kW`, tone: 'yellow'}],
+      stats: [],
     },
   },
   {
@@ -172,10 +143,7 @@ export const ZONES: Zone[] = [
       kicker: 'Lokaal warmtenet',
       tone: 'yellow',
       text: 'Restwarmte van de metaalbewerking en het koelhuis gaat via ondergrondse leidingen naar kantoren en panden met warmtevraag. Haalbaarheid hangt af van temperatuur, afstand, aanbod en vraag.',
-      stats: [
-        {label: 'Restwarmte benut', value: () => '≈ 62%', tone: 'yellow', bar: () => 0.62},
-        {label: 'Warmtebuffer', value: (t) => `${Math.round(70 + 15 * Math.sin(t * 0.3))}%`, tone: 'yellow'},
-      ],
+      stats: [],
     },
   },
   {
@@ -188,10 +156,7 @@ export const ZONES: Zone[] = [
       kicker: '± 2 hectare',
       tone: 'cyan',
       text: 'Carports met zonnepanelen, laadpunten voor auto’s en vrachtwagens, groen en wateropvang. Laden wordt gepland buiten de avondpiek.',
-      stats: [
-        {label: 'Zon op carports', value: (t) => `${Math.round(210 + wobble(t, 4, 20))} kW`, tone: 'yellow'},
-        {label: 'Laadpunten', value: () => 'auto’s + 3 vrachtwagens', tone: 'cyan'},
-      ],
+      stats: [],
     },
   },
   {
@@ -204,7 +169,7 @@ export const ZONES: Zone[] = [
       kicker: 'Elektrificatie',
       tone: 'red',
       text: 'De logistiek stapt over op elektrische vrachtwagens, maar voor snelladers is geen netcapaciteit.',
-      stats: [{label: 'Snelladers', value: () => 'wacht op aansluiting', tone: 'red'}],
+      stats: [],
     },
   },
   ...WADIS.map(
@@ -223,3 +188,43 @@ export const ZONES: Zone[] = [
   ),
   ...BUILDINGS.map((_, i) => buildingZone(i)),
 ];
+
+/** De plattegrond deelt de instellingen en berekening met dashboard en facturatie. */
+export function makeZones(settings: Settings): Zone[] {
+  const days = compareScenarios(settings);
+  const hubDay = days[(settings.thermal?.enabled ?? true) ? 2 : 1];
+  const sample = (t: number, mode: Mode) => (mode === 'nu' ? days[0] : hubDay).steps[Math.floor(((6 + t * .9) % 24) * 4)];
+  const n = (v: number) => Math.round(v).toLocaleString('nl-NL');
+  const getStats = (id: string, mode: Mode): Stat[] => {
+    const st = (t: number) => sample(t, mode);
+    const stats: Stat[] = [{label: 'Illustratieve modeltijd', value: t => `${settings.season} · ${fmtTime(st(t).h)}`}];
+    if (id.startsWith('pand-')) {
+      const j = Number(id.split('-')[1]) - 1;
+      stats.push({label: 'Geplande elektriciteitsvraag', value: t => `${n(st(t).perCompany[j].use)} kW`, tone: 'cyan'},
+        {label: 'Referentievermogen (geen garantie)', value: () => `${COMPANIES[j].minKw} kW`, tone: 'green'},
+        {label: 'Dakopwek', value: t => `${n(st(t).perCompany[j].pv)} kW`, tone: 'yellow'},
+        {label: 'Warmte uit net en buffer', value: t => `${n(st(t).perDelivered[j])} kWth`, tone: 'yellow'},
+        {label: 'Koelvraag', value: t => `${n(st(t).perCold[j])} kWth`, tone: 'cyan'});
+    } else if (id === 'trafo') stats.push(
+      {label: 'Netimport', value: t => `${n(st(t).grid)} kW`, tone: 'cyan'},
+      {label: 'Netlimiet', value: () => `${settings.capKw} kW`},
+      {label: 'Niet geleverd', value: t => `${n(st(t).shortfall)} kW`, tone: 'red'});
+    else if (id === 'hub') stats.push(
+      {label: 'Batterijvoorraad', value: t => `${n(st(t).batteryKwh)} kWh`, tone: 'green', bar: t => st(t).soc},
+      {label: 'Batterijstatus', value: t => st(t).charge > .1 ? 'laden' : st(t).discharge > .1 ? 'ontladen' : 'stand-by'});
+    else if (id === 'zonnepark') stats.push({label: 'Naar collectief systeem', value: t => `${n(mode === 'hub' && settings.parkLink ? PARK_KWP * solarPerKwp(st(t).h, settings.season) : 0)} kW`, tone: 'yellow'});
+    else if (id === 'turbine') stats.push({label: 'Naar collectief systeem', value: t => `${n(mode === 'hub' ? st(t).wind : 0)} kW`, tone: 'yellow'});
+    else if (id === 'warmtenet') stats.push(
+      {label: 'Nuttig geleverd', value: t => `${n(st(t).directHeat + st(t).bufferDischarge)} kWth`, tone: 'yellow'},
+      {label: 'Pomp en circulatie', value: t => `${n(st(t).heatPumpElectric + st(t).pumpElectric)} kW`, tone: 'cyan'},
+      {label: 'Warmtebuffer', value: t => `${n(st(t).bufferKwh)} kWhth`, tone: 'yellow'});
+    else if (id === 'laadplein') stats.push({label: 'Carportopwek', value: () => 'Nog apart te dimensioneren'});
+    else return [];
+    return stats;
+  };
+  return ZONE_LAYOUT.map(z => ({...z,
+    nu: z.nu ? {...z.nu, stats: getStats(z.id, 'nu')} : undefined,
+    hub: z.hub ? {...z.hub, stats: getStats(z.id, 'hub')} : undefined,
+  }));
+}
+export const ZONES = makeZones(DEFAULT_SETTINGS);

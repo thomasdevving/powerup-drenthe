@@ -4,6 +4,8 @@ import {C, clamp01, easeOutBack, fract, mixColor, rand} from '../util';
 import type {WorldState} from './state';
 import {BUILDINGS} from './layout';
 import {Cable, Clay, Flow, polyCurve} from './primitives';
+import {pitchStep} from '../energy/pitch-data';
+import {DEFAULT_THERMAL} from '../energy/profiles';
 
 /**
  * Uitbreidingen voor het integrale verhaal, in dezelfde 3D-wereld:
@@ -123,10 +125,19 @@ const Plume: React.FC<{x: number; y: number; z: number; amt: number; sec: number
 const HeatNetwork: React.FC<{ws: WorldState; sec: number}> = ({ws, sec}) => {
   const sources = useMemo(() => HEAT_SOURCES.map(polyCurve), []);
   const sinks = useMemo(() => HEAT_SINKS.map(polyCurve), []);
+  const step = pitchStep(ws.heatRecovered);
+  const fill = step.bufferKwh / DEFAULT_THERMAL.bufferKwh;
+  const cold = useMemo(() => polyCurve([[-5, 0.50, 11.8], [-5, 0.50, 17], [-12, 0.50, 17], [-12, 0.50, 11.8]]), []);
+  const power = useMemo(() => polyCurve([[0, 0.55, 2], [-5, 0.55, 2], [-5, 0.55, 11.8]]), []);
   const net = ws.heatNet;
   const st = ws.heatStation;
   return (
     <group>
+      {/* Doorsnede: blauw koelcircuit; geel elektrisch ingangsvermogen. Zelfde materialen en deeltjes. */}
+      <Cable curve={cold} radius={0.24} color="#357eaf" emissive="#65baff" glow={0.9} reveal={ws.coldNet} segments={60} />
+      <Flow curve={cold} count={12} speed={0.35} sec={sec} amount={ws.coldNet} color="#65baff" size={0.38} />
+      <Cable curve={power} radius={0.16} color={C.solar} emissive={C.solar} glow={0.7} reveal={ws.coldNet} segments={60} />
+      <Flow curve={power} count={8} speed={0.35} sec={sec} amount={ws.coldNet} color={C.solar} size={0.3} />
       {/* restwarmte die verloren gaat (vóór het warmtenet) */}
       {SOURCE_BUILDINGS.map((bi, k) => {
         const b = BUILDINGS[bi];
@@ -161,6 +172,8 @@ const HeatNetwork: React.FC<{ws: WorldState; sec: number}> = ({ws, sec}) => {
       {sinks.map((cv, i) => (
         <Flow key={`fk${i}`} curve={cv} count={8} speed={0.45} sec={sec} amount={ws.heatFlow} color={HEAT_SUPPLY} size={0.38} phase={i * 0.2} />
       ))}
+      {/* Uitgaande bufferstroom, alleen als het gedeelde rekenmodel daadwerkelijk ontlaadt. */}
+      <Flow curve={sinks[0]} count={7} speed={0.55} sec={sec} amount={step.bufferDischarge > 0.1 ? ws.heatFlow : 0} color="#ffc06b" size={0.52} />
       {/* warmtestation: warmtepomp + warmtebuffer */}
       {st > 0.001 ? (
         <group position={[HEAT_STATION.x, 0, HEAT_STATION.z]} scale={[st, st, st]}>
@@ -176,7 +189,7 @@ const HeatNetwork: React.FC<{ws: WorldState; sec: number}> = ({ws, sec}) => {
             <meshStandardMaterial color="#f2efe9" roughness={0.8} />
           </mesh>
           {/* vulling buffer */}
-          <mesh position={[0, 0.3 + 2.8 * (0.35 + 0.5 * ws.heatRecovered), -1.4 + 0.0]} scale={[1, 0.35 + 0.5 * ws.heatRecovered, 1]}>
+          <mesh position={[0, 0.3 + 2.8 * fill, -1.4 + 0.0]} scale={[1, fill, 1]}>
             <cylinderGeometry args={[1.28, 1.28, 5.6, 18, 1, true]} />
             <meshBasicMaterial color={HEAT} toneMapped={false} transparent opacity={0.45} side={THREE.DoubleSide} />
           </mesh>

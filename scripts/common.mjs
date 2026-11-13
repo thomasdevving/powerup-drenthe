@@ -1,4 +1,5 @@
 import path from 'node:path';
+import {existsSync} from 'node:fs';
 import {fileURLToPath} from 'node:url';
 import {bundle} from '@remotion/bundler';
 import {selectComposition} from '@remotion/renderer';
@@ -6,6 +7,7 @@ import {selectComposition} from '@remotion/renderer';
 export const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 export const GL = process.env.GL ?? 'angle';
 export const chromiumOptions = {gl: GL};
+export const browserExecutable = process.env.CHROME_PATH || (existsSync('/usr/bin/chromium') ? '/usr/bin/chromium' : undefined);
 
 export const makeBundle = () =>
   bundle({entryPoint: path.join(ROOT, 'src/index.ts'), publicDir: path.join(ROOT, 'public'), onProgress: () => {}});
@@ -23,4 +25,4 @@ export const parseOverrides = () => {
 };
 
 export const select = (serveUrl, id, inputProps) =>
-  selectComposition({serveUrl, id, inputProps, chromiumOptions});
+  selectComposition({serveUrl, id, inputProps, chromiumOptions, browserExecutable});

@@ -1,0 +1,38 @@
+.multi { margin-top: 16px; }
+.multi h2 { margin: 4px 0; font-size: clamp(20px, 2vw, 28px); letter-spacing: -.5px; }
+.multi-eyebrow { color: var(--cyan); font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; }
+.multi-badge { color: var(--muted); font-size: 12px; white-space: nowrap; }
+.multi-switches { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0; align-items: center; }
+.multi-switches button { background: #162b39; border: 1px solid #355363; color: white; padding: 10px 14px; border-radius: 999px; font: inherit; cursor: pointer; }
+.multi-switches button[aria-pressed=true] { background: #21e6d0; color: #06202a; font-weight: 700; }
+.multi-switches label { padding: 8px; }
+.multi input { accent-color: #ff9d2e; }
+.multi-controls, .carrier-grid { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 16px; }
+.multi-controls label { display: flex; flex-wrap: wrap; gap: 6px; font-size: 13px; color: var(--muted); }
+.multi-controls b { margin-left: auto; color: white; }
+.multi-controls input { width: 100%; }
+.carrier-grid { grid-template-columns: repeat(3, minmax(0,1fr)); margin: 20px 0; }
+.carrier-grid article { background: #132332; border-top: 3px solid; border-radius: 10px; padding: 16px; }
+.carrier-grid strong { display: block; font-size: 29px; margin-top: 12px; }
+.carrier-grid small { font-size: 12px; font-weight: 500; }
+.carrier-grid p, .multi-company p, .multi-balances p, .multi details p { font-size: 13px; line-height: 1.6; color: var(--muted); }
+.multi-flow { border: 1px solid var(--line); border-radius: 14px; background: #0a151f; }
+.multi svg { width: 100%; height: auto; font: 13px Inter,system-ui,sans-serif; display: block; }
+.multi-flow svg { font-size: 15px; }
+.heat-flow { stroke: #ff9d2e; stroke-width: 4; fill: none; opacity: .15; }
+.heat-flow.active { opacity: 1; stroke-dasharray: 12 8; animation: heat-travel 1.4s linear infinite; }
+@keyframes heat-travel { to { stroke-dashoffset: -40; } }
+.multi-company { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; margin-top: 16px; }
+.multi-company label { font-size: 13px; }
+.multi select { background: #1b3545; color: white; border: 1px solid #355363; border-radius: 8px; padding: 8px; margin-left: 10px; max-width: 100%; }
+.multi-balances { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px; }
+.multi-table { overflow-x: auto; margin-top: 16px; }
+.multi table { border-collapse: collapse; min-width: 700px; width: 100%; font-size: 13px; }
+.multi th, .multi td { text-align: left; padding: 12px; border-bottom: 1px solid var(--line); }
+.multi thead th { color: #21e6d0; background: #132332; }
+.multi tbody th { color: var(--muted); font-weight: 500; }
+.multi details { margin-top: 20px; }
+.multi summary { cursor: pointer; font-size: 14px; color: #21e6d0; }
+.multi button:focus-visible, .multi select:focus-visible, .multi input:focus-visible, .multi summary:focus-visible { outline: 2px solid white; outline-offset: 3px; }
+@media (max-width: 750px) { .carrier-grid, .multi-balances { grid-template-columns: 1fr; } .multi-controls { grid-template-columns: 1fr 1fr; } .multi .panel-head { flex-wrap: wrap; } }
+@media (prefers-reduced-motion: reduce) { .heat-flow.active { animation: none; } }

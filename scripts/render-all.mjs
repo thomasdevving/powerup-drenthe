@@ -4,7 +4,8 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import {renderMedia} from '@remotion/renderer';
-import {ROOT, chromiumOptions, makeBundle, parseOverrides, select} from './common.mjs';
+import {ROOT, chromiumOptions, browserExecutable, makeBundle, parseOverrides, select} from './common.mjs';
+import {guideFromPitch} from './guide-from-pitch.mjs';
 
 const has = (f) => process.argv.includes(f);
 const outDir = path.join(ROOT, 'out');
@@ -105,6 +106,7 @@ const render = async (id, file) => {
     outputLocation: path.join(outDir, file),
     inputProps: c.props,
     chromiumOptions,
+    browserExecutable,
     concurrency: Number(process.env.CONCURRENCY ?? 6),
     overwrite: true,
     onProgress: ({progress}) => {
@@ -119,4 +121,4 @@ const render = async (id, file) => {
 };
 
 await render('Pitch', 'pitch.mp4');
-if (!has('--skip-gids')) await render('PitchVoGids', 'pitch-vo-gids.mp4');
+if (!has('--skip-gids')) await guideFromPitch();

@@ -2,8 +2,11 @@
   "name": "energy-hub-pitch",
   "version": "1.0.0",
   "private": true,
-  "description": "Energy Hub pitchvideo \u2014 PowerUp Drenthe Hackathon 2026 (Energiek Innovatie Collectief)",
+  "description": "Energy Hub pitchvideo — PowerUp Drenthe Hackathon 2026 (Energiek Innovatie Collectief)",
   "scripts": {
+    "test": "node scripts/test-energy.mjs",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p web/tsconfig.json",
+    "render:guide": "node scripts/guide-from-pitch.mjs",
     "studio": "remotion studio",
     "still": "node scripts/stills.mjs",
     "render": "node scripts/render-all.mjs",
@@ -14,6 +17,7 @@
   },
   "type": "module",
   "dependencies": {
+    "@fontsource/inter": "^5.2.8",
     "@react-three/fiber": "9.4.0",
     "@remotion/bundler": "4.0.543",
     "@remotion/cli": "4.0.543",

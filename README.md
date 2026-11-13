@@ -4,6 +4,34 @@
 
 Alles is procedureel opgebouwd uit primitives (geen externe 3D-modellen). Output: 1920×1080, 30 fps, H.264.
 
+## Multi-Commodity-versie · maximaal twee minuten
+
+De pitch duurt met de nieuwe Nederlandse synthetische voice-over **115,67 seconden**, inclusief eindkaart. De bestaande 3D-wereld, camera, kleuren en materialen zijn behouden; warmte, koude en begrensde thermische opslag zijn geïntegreerd. Het praktijkvoorbeeld, de vergelijking en het team zijn ingekort. Een render boven 120 seconden wordt geweigerd.
+
+Het bestaande dashboard bevat nu **Multi-Commodity Energy Management** met scenario A/B/C, warmtenet aan/uit, COP, buffer, leidingverliezen en terugwinbaar bronvermogen. Alle grafieken, facturatie en videowaarden gebruiken het gedeelde kwartiermodel in `src/energy/`. Tekorten boven de netlimiet blijven zichtbaar; kostenvoordelen worden niet geclaimd bij ongelijke levering.
+
+- [Video](out/pitch.mp4) · [Script en draaiboek als PDF](VOICEOVER.pdf) · [Gidsvideo](out/pitch-vo-gids.mp4) · [Ondertiteling](out/voiceover.srt)
+- [Technische aannames, grenzen en controles](TECHNICAL.md)
+- Nieuwe audio: `public/vo/compact/scene-01.wav` t/m `scene-12.wav`; oudere opnames blijven behouden.
+- Fonts worden lokaal gebundeld via `@fontsource/inter`.
+- Voor binaire bestanden: `git lfs install` en `git lfs pull`.
+
+```bash
+npm install
+npm test
+npm run typecheck
+cd web && npm install && npm run build
+```
+
+Renderen op een machine zonder GPU:
+
+```bash
+GL=swangle CONCURRENCY=2 npm run render
+npm run vo-pdf
+```
+
+De gids hergebruikt de definitieve 3D-render en voegt met FFmpeg een leeslaag met woordmarkering toe. FFmpeg is daarom nodig voor de gids. `CHROME_PATH` kan een eigen Chromium-pad aanwijzen; anders gebruikt de workflow systeem-Chromium als dat aanwezig is, of de standaard Remotion-browser.
+
 ## Verhaallijn (12 scènes)
 
 Netcongestie is de aanleiding, niet het hele verhaal: het concept bereidt bedrijventerreinen voor op de toekomst.
@@ -29,7 +57,7 @@ Kies links `Pitch` (de video) of `PitchVoGids` (met teleprompter en scènenummer
 ## Voice-over toevoegen en opnieuw renderen
 
 1. Neem per scène op volgens [VOICEOVER.md](VOICEOVER.md) (wav, 48 kHz, ~0,3 s stilte voor en na).
-2. Zet de bestanden in `public/vo/` als `scene-01.wav` … `scene-09.wav`. Ontbrekende scènes houden hun standaardduur.
+2. Zet de compacte opnames in `public/vo/compact/` als `scene-01.wav` … `scene-12.wav`. Ontbrekende scènes houden hun standaardduur. De totale video mag niet boven 120 seconden komen.
 3. Optioneel: zet achtergrondmuziek in `public/music.mp3` (volume 0,12, automatisch gedempt naar 0,05 tijdens VO).
 4. Render alles met één commando:
 
@@ -117,7 +145,7 @@ Zet een foto als `public/hook.jpg` (of .png/.webp) en vul de naamsvermelding in 
 ## Hoe het werkt
 
 - **`src/script.ts`** is het enige bronbestand: per scène id, titel, VO-tekst, keywords (met een `cue`-woord waarop ze verschijnen) en een beschrijving van het beeld.
-- **Duur per scène** = woorden / 2,3 + 1,0 s ademruimte (0,5 s aan begin en eind). Staat er een wav-bestand, dan geldt: lengte opname + 1,0 s. Zie `src/timeline.ts`.
+- **Duur per scène** = woorden / 2,6 + 1,0 s ademruimte (0,5 s aan begin en eind). Staat er een wav-bestand, dan geldt: lengte opname + 1,0 s. Zie `src/timeline.ts`. Bij een totale duur boven 120 seconden stopt de render.
 - **Alle animatie loopt op scène-progress** (0 → 1), nooit op vaste frames. De choreografie staat op één plek: `src/world/state.ts`. Momenten zijn gekoppeld aan woorden in de VO (`cue(…)`), dus als je tekst of opname verandert, blijft beeld synchroon. Alleen doorlopende ambient-bewegingen (deeltjes, wieken) lopen op seconden, zodat hun snelheid constant blijft.
 - **Camera:** keyframes in story-time (`src/world/camera.ts`), vloeiend geïnterpoleerd in echte seconden, zonder harde cuts.
 - **Kleurcode:** rood/oranje = congestie, cyaan/groen = smart grid, geel = zonne-energie, groene vulling = batterijniveau (`src/util.ts`).

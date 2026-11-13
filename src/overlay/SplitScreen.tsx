@@ -1,6 +1,6 @@
 import React from 'react';
 import {AbsoluteFill} from 'remotion';
-import {SCENES, cueFraction, sceneIndex} from '../script';
+import {sceneIndex} from '../script';
 import type {Story} from '../timeline';
 import {C, easeOut, seg} from '../util';
 import type {WorldState} from '../world/state';
@@ -15,23 +15,19 @@ const LEFT: Side = {
   title: 'Traditioneel bedrijventerrein',
   color: '#ff9b84',
   points: [
-    {icon: 'stop', text: 'Groei wacht op netverzwaring'},
-    {icon: 'peak', text: 'Pieken vallen samen'},
-    {icon: 'flame', text: 'Restwarmte gaat verloren'},
-    {icon: 'heat', text: 'Heet, versteend, water blijft staan'},
-    {icon: 'alone', text: 'Ieder bedrijf voor zich'},
+    {icon: 'alone', text: 'Afzonderlijke systemen'},
+    {icon: 'flame', text: 'Restwarmte niet gedeeld'},
+    {icon: 'peak', text: 'Weinig afstemming'},
   ],
 };
 const RIGHT: Side = {
   kicker: 'Morgen',
-  title: 'Toekomstbestendig bedrijventerrein',
+  title: 'Multi-Commodity bedrijventerrein',
   color: C.gridGreen,
   points: [
-    {icon: 'grow', text: 'Ruimte voor economische groei'},
-    {icon: 'flat', text: 'Pieken gespreid, klaar voor elektrificatie'},
-    {icon: 'loop', text: 'Warmte benut, minder verspilling en kosten'},
-    {icon: 'leaf', text: 'Groen, koel en waterberging'},
-    {icon: 'coop', text: 'Samen georganiseerd, aantrekkelijk vestigen'},
+    {icon: 'bolt', text: 'Gezamenlijk energiemanagement'},
+    {icon: 'loop', text: 'Warmtenet en thermische opslag'},
+    {icon: 'leaf', text: 'Groen, water en samenwerking'},
   ],
 };
 
@@ -55,7 +51,7 @@ const Card: React.FC<{side: Side; t: number; align: 'left' | 'right'}> = ({side,
     <div style={{fontSize: 26, fontWeight: 700, color: side.color, letterSpacing: 3, textTransform: 'uppercase'}}>{side.kicker}</div>
     <div style={{fontSize: 52, fontWeight: 800, letterSpacing: -1.5, marginBottom: 22, lineHeight: 1.05}}>{side.title}</div>
     {side.points.map((pt, i) => {
-      const a = seg(t, 0.12 + i * 0.14, 0.32 + i * 0.14, easeOut);
+      const a = seg(t, 0.12 + i * 0.14, 0.24 + i * 0.14, easeOut);
       return (
         <div key={i} style={{display: 'flex', alignItems: 'center', gap: 22, marginTop: 16, opacity: a, transform: `translateX(${(1 - a) * 30}px)`}}>
           <div style={{width: 76, height: 76, borderRadius: 20, background: `${side.color}22`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0}}>
@@ -71,10 +67,9 @@ const Card: React.FC<{side: Side; t: number; align: 'left' | 'right'}> = ({side,
 /** Scène "voordelen": traditioneel vs toekomstbestendig. */
 export const SplitScreen: React.FC<{story: Story; ws: WorldState}> = ({story, ws}) => {
   if (ws.split <= 0.001) return null;
-  const S = SCENES[sceneIndex('voordelen')];
   const c = story.cprog(sceneIndex('voordelen'));
-  const rc = cueFraction(S, 'creëren');
-  const lt = seg(c, 0.0, rc + 0.02, (x) => x);
+  const rc = 0.3;
+  const lt = seg(c, 0.0, 0.48, (x) => x);
   const rt = seg(c, rc - 0.06, 1.0, (x) => x);
   return (
     <AbsoluteFill style={{opacity: ws.split}}>

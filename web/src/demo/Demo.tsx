@@ -5,7 +5,6 @@ import {
   PEAK_END,
   PEAK_START,
   STEPS,
-  companyLoad,
   events,
   fmtTime,
   simulate,
@@ -17,6 +16,7 @@ import {
   type Step,
 } from './sim';
 import './demo.css';
+import {MultiCommodity} from './MultiCommodity';
 
 /** Gevalideerde grafiekkleuren (donker oppervlak), afgeleid van de kleurcode van de video. */
 const SERIES = {
@@ -92,7 +92,7 @@ const DayChart: React.FC<{r: DayResult; s: Settings; t: number; onPick: (h: numb
   const ticks = [];
   for (let v = 0; v <= yMax; v += yMax > 1200 ? 400 : 200) ticks.push(v);
 
-  const shortLabel = s.hub ? 'Geschoven (boven afspraak)' : 'Tekort: net vol';
+  const shortLabel = 'Niet geleverde vraag';
   return (
     <div className="chart" ref={ref}>
       <div className="legend-row" role="list">
@@ -207,17 +207,10 @@ const SocChart: React.FC<{r: DayResult; t: number; capKwh: number}> = ({r, t, ca
 const advice = (ci: number, s: Settings, step: Step): string[] => {
   const c = COMPANIES[ci];
   const out: string[] = [];
-  const evening = 19;
-  const without = companyLoad(c, evening, {...s, rules: {laden: false, voorkoelen: false, spreiden: false}});
-  const withRule = (k: keyof Settings['rules']) => companyLoad(c, evening, {...s, hub: true, rules: {laden: false, voorkoelen: false, spreiden: false, [k]: true}});
-  const dLaden = without.laden - withRule('laden').laden;
-  const dKoel = without.koeling - withRule('voorkoelen').koeling;
-  if (dLaden > 15) out.push(s.hub && s.rules.laden ? `Laadpalen laden nu overdag en ’s nachts: ${kw(dLaden)} minder in de avondpiek.` : `Laadpalen pieken tussen 17 en 22 uur. Met de regel “laden buiten de piek” scheelt dat ${kw(dLaden)}.`);
-  if (dKoel > 15) out.push(s.hub && s.rules.voorkoelen ? `Koelt voor op de middag met zonnestroom: ${kw(dKoel)} minder in de avondpiek.` : `Voorkoelen op de middag (zonpiek) scheelt ${kw(dKoel)} in de avondpiek.`);
-  if (c.loads.machines > 100) out.push(s.hub && s.rules.spreiden ? 'Zware machines starten gespreid op: geen opstartpieken meer.' : 'Zware machines starten tegelijk op. Spreiden haalt de opstartpiek eraf.');
-  const pv = (s.hub ? c.pvKwp : c.pvNowKwp);
-  if (pv > 0) out.push(s.hub ? `Dak levert ${kw(step.perCompany[ci].pv)} zonnestroom aan het eigen smart grid.` : `Heeft zonnepanelen, maar kan overschot niet terugleveren.`);
-  else if (!s.hub) out.push('Geen eigen opwek. Met de Energy Hub deelt dit pand in de zonnestroom van de buren en het zonnepark.');
+  if (c.loads.laden > 0) out.push(s.hub && s.rules.laden ? 'Laadplanning verschuift naar dag en nacht, met behoud van de dagelijkse laadenergie.' : 'Laden valt grotendeels in de avond. Vergelijk de planning met de hub.');
+  if (c.loads.koeling > 0 && s.hub && s.rules.voorkoelen) out.push('Koudebuffer verschuift een deel van de koeling; capaciteit en verliezen zijn meegerekend.');
+  if (c.loads.machines > 100) out.push(s.hub && s.rules.spreiden ? 'Machineplanning spreidt opstarten; de totale dagelijkse procesenergie blijft gelijk.' : 'Onderzoek spreiding van opstartmomenten.');
+  if (step.perCompany[ci].pv > 0) out.push(`Dakopwek op dit tijdstip: ${kw(step.perCompany[ci].pv)}.`);
   return out.slice(0, 3);
 };
 
@@ -233,13 +226,9 @@ const Companies: React.FC<{step: Step; s: Settings; open: number | null; setOpen
         {COMPANIES.map((c, i) => {
           const p = step.perCompany[i];
           const over = p.use > c.minKw;
-          const status = p.shifted > 0.5
-            ? {tone: 'red', text: s.hub ? `${kw(p.shifted)} geschoven` : 'Wacht op netcapaciteit'}
-            : !s.hub && step.shortfall > 0.5
-              ? {tone: 'red', text: 'Net vol'}
-              : over
-                ? {tone: 'cyan', text: 'Boven minimum, past'}
-                : {tone: 'green', text: 'Binnen minimum'};
+          const status = step.shortfall > 0.5
+            ? {tone: 'red', text: 'Terrein: niet volledig leverbaar'}
+            : over ? {tone: 'cyan', text: 'Boven referentie'} : {tone: 'green', text: 'Binnen referentie'};
           const isOpen = open === i;
           return (
             <li key={c.id} className={isOpen ? 'open' : ''}>
@@ -254,7 +243,7 @@ const Companies: React.FC<{step: Step; s: Settings; open: number | null; setOpen
                   {p.shifted > 0.5 ? (
                     <span className="shift" style={{left: `${Math.min(100, ((p.use - p.shifted) / scale) * 100)}%`, width: `${Math.min(100, (p.shifted / scale) * 100)}%`}} />
                   ) : null}
-                  <span className="min" style={{left: `${(c.minKw / scale) * 100}%`}} title="gegarandeerd minimum" />
+                  <span className="min" style={{left: `${(c.minKw / scale) * 100}%`}} title="referentievermogen" />
                 </span>
                 <span className="val">{kw(p.use)}</span>
                 <span className={`chip ${status.tone}`}>{status.text}</span>
@@ -272,7 +261,7 @@ const Companies: React.FC<{step: Step; s: Settings; open: number | null; setOpen
                     ))}
                   </div>
                   <div className="facts">
-                    <div><span>Gegarandeerd minimum</span><b>{kw(c.minKw)}</b></div>
+                    <div><span>Referentievermogen</span><b>{kw(c.minKw)}</b></div>
                     {p.pv > 0.5 ? <div><span>Eigen zonnestroom nu</span><b>{kw(p.pv)}</b></div> : null}
                   </div>
                   <ul className="advice">
@@ -287,7 +276,7 @@ const Companies: React.FC<{step: Step; s: Settings; open: number | null; setOpen
         })}
       </ul>
       <div className="foot muted">
-        <span className="min-legend" /> gegarandeerd minimum per bedrijf · daarboven wordt geschoven of zelf opgewekt
+        <span className="min-legend" /> referentievermogen per bedrijf · geen leveringsgarantie; tekorten staan apart
       </div>
     </div>
   );
@@ -452,7 +441,7 @@ const Controls: React.FC<{s: Settings; set: (p: Partial<Settings>) => void}> = (
 
       <h3>Gedragsregels <span className="muted">door de community</span></h3>
       <Toggle on={s.rules.laden} disabled={!s.hub} onChange={(v) => set({rules: {...s.rules, laden: v}})} title="Laden buiten de avondpiek" text="Laadpalen overdag (zon) of ’s nachts" />
-      <Toggle on={s.rules.voorkoelen} disabled={!s.hub} onChange={(v) => set({rules: {...s.rules, voorkoelen: v}})} title="Voorkoelen op de middag" text="Koelhuis koelt met zonnestroom vooruit" />
+      <Toggle on={s.rules.voorkoelen} disabled={!s.hub} onChange={(v) => set({rules: {...s.rules, voorkoelen: v}})} title="Voorkoelen met koudebuffer" text="400 kWhth illustratieve opslag; verliezen meegerekend" />
       <Toggle on={s.rules.spreiden} disabled={!s.hub} onChange={(v) => set({rules: {...s.rules, spreiden: v}})} title="Opstartpieken spreiden" text="Zware machines niet tegelijk aan" />
       {!s.hub ? <p className="note">Zet “Met Energy Hub” aan om de hub en de regels te gebruiken.</p> : null}
     </div>
@@ -520,9 +509,9 @@ export const Demo: React.FC<{tabs: React.ReactNode; s: Settings; setS: React.Dis
       </header>
 
       <section className="intro">
-        <h1>Eén afspraak met de leverancier. Het terrein verdeelt zelf.</h1>
+        <h1>Elektriciteit, warmte en koude. Eén samenhangend terrein.</h1>
         <p>
-          Simuleer een dag op een Drents bedrijventerrein. Zie per adres wat er nodig is, hoe de batterij pieken opvangt en hoe gedragsregels de avondpiek verschuiven. Vergelijk met de situatie zonder Energy Hub.
+          Simuleer een dag op een Drents bedrijventerrein. Zie per adres wat er nodig is, hoe de batterij pieken opvangt en hoe gedragsregels de avondpiek verschuiven. Warmte, koude en elektriciteit worden samen doorgerekend; de aansluiting vraagt passende contracten en wettelijke toetsing.
         </p>
       </section>
 
@@ -562,9 +551,9 @@ export const Demo: React.FC<{tabs: React.ReactNode; s: Settings; setS: React.Dis
           </div>
 
           <div className="kpis">
-            <Kpi label="Hoogste piek uit het net" value={kw(k.peakGrid)} other={kw(ko.peakGrid)} better={s.hub ? k.peakGrid < ko.peakGrid : null} hint={cmpLabel} />
+            <Kpi label="Hoogste gevraagde netpiek" value={kw(k.peakGrid)} other={kw(ko.peakGrid)} better={s.hub ? k.peakGrid < ko.peakGrid : null} hint={cmpLabel} />
             <Kpi label="Uren boven de afspraak" value={`${k.hoursOver.toLocaleString('nl-NL')} u`} other={`${ko.hoursOver.toLocaleString('nl-NL')} u`} better={s.hub ? k.hoursOver <= ko.hoursOver : null} hint={cmpLabel} />
-            <Kpi label="Verbruik uit eigen opwek" value={pct(k.selfShare)} other={pct(ko.selfShare)} better={s.hub ? k.selfShare >= ko.selfShare : null} hint={cmpLabel} />
+            <Kpi label="Direct uit lokale opwek" value={pct(k.selfShare)} other={pct(ko.selfShare)} better={s.hub ? k.selfShare >= ko.selfShare : null} hint={cmpLabel} />
             <Kpi label="Niet geleverde vraag" value={kwh(k.shortfallKwh)} other={kwh(ko.shortfallKwh)} better={s.hub ? k.shortfallKwh <= ko.shortfallKwh : null} hint={cmpLabel} />
           </div>
 
@@ -601,6 +590,7 @@ export const Demo: React.FC<{tabs: React.ReactNode; s: Settings; setS: React.Dis
           </div>
         </div>
       </div>
+      <MultiCommodity s={s} set={set} t={t} onTime={h => {setPlaying(false); setT(h);}} />
       <footer className="d-foot muted">Energiek Innovatie Collectief · PowerUp Drenthe 2026 · demo met indicatieve waarden, geen meetdata</footer>
     </div>
   );

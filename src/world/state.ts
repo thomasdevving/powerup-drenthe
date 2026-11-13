@@ -75,15 +75,16 @@ export const worldState = (st: Story) => {
 
   // ---- 5. Lokaal warmtenet
   const W = 'warmtenet';
-  const heatWaste = inOut(c(W), 0.0, 0.08, cue(W, 'warmtenet') + 0.04, cue(W, 'warmtenet') + 0.2);
-  const heatNet = seg(c(W), cue(W, 'lokaal') - 0.04, cue(W, 'warmtenet') + 0.1, lin);
-  const heatStation = seg(c(W), cue(W, 'warmtenet') - 0.04, cue(W, 'warmtenet') + 0.06, easeOut);
-  const heatFlow = seg(c(W), cue(W, 'benut') - 0.02, cue(W, 'gebouwen') + 0.04);
-  const heatSinks = seg(c(W), cue(W, 'gebouwen'), cue(W, 'verwarmen.') + 0.05);
-  const heatCard = seg(c(W), cue(W, 'benut') - 0.02, cue(W, 'benut') + 0.06) * (1 - seg(s, at(W, 0.97), at('ruimte', 0.05)));
-  const heatRecovered = seg(c(W), cue(W, 'benut'), cue(W, 'efficiënter'));
-  const wasteLabel = inOut(c(W), 0.05, 0.12, cue(W, 'lokaal') - 0.04, cue(W, 'lokaal') + 0.04);
-  const stationLabel = inOut(c(W), cue(W, 'warmtenet'), cue(W, 'warmtenet') + 0.06, 0.96, 1.0);
+  const heatWaste = inOut(c(W), 0.0, 0.08, 0.22, 0.32);
+  const heatNet = seg(c(W), 0.20, 0.40, lin);
+  const heatStation = seg(c(W), 0.28, 0.40, easeOut);
+  const heatFlow = seg(c(W), 0.32, 0.48);
+  const heatSinks = seg(c(W), 0.40, 0.52);
+  const heatCard = seg(c(W), 0.42, 0.49) * (1 - seg(s, at(W, 0.99), at('ruimte', 0.04)));
+  const heatRecovered = seg(c(W), 0.45, 0.93, lin);
+  const coldNet = seg(c(W), 0.14, 0.30);
+  const wasteLabel = inOut(c(W), 0.05, 0.12, 0.22, 0.30);
+  const stationLabel = inOut(c(W), 0.28, 0.34, 0.43, 0.49);
 
   // ---- 6. Ruimtelijke transformatie
   const R = 'ruimte';
@@ -123,7 +124,7 @@ export const worldState = (st: Story) => {
     dusk, congestion, jam, growTry, growStop, ghost, queue, bounce, inset, insetRed,
     pills, trucksIn, heat: clamp01(heat), puddles, rain, dim,
     hubRise, supplyCable, ring, solarOpen, turbine, parkLink, charge, peak, discharge, battery, gridOn, dash, dashP,
-    heatWaste, heatNet, heatStation, heatFlow, heatSinks, heatCard, heatRecovered, wasteLabel, stationLabel,
+    heatWaste, heatNet, heatStation, heatFlow, heatSinks, heatCard, heatRecovered, coldNet, wasteLabel, stationLabel,
     growOk, green, cool, laadplein, laadSolar, truckMove, laadLabel,
     haulerwijk, hwOurs, coop, coopCard, split, risks,
     map, localFade, sitesLit, nlLit, endTitle,

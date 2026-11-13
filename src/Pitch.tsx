@@ -1,7 +1,11 @@
 import React from 'react';
 import {AbsoluteFill, Audio, Sequence, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
 import {ThreeCanvas} from '@remotion/three';
-import {loadFont} from '@remotion/google-fonts/Inter';
+import '@fontsource/inter/400.css';
+import '@fontsource/inter/500.css';
+import '@fontsource/inter/600.css';
+import '@fontsource/inter/700.css';
+import '@fontsource/inter/800.css';
 import {PADDING_SECONDS} from './script';
 import {defaultTimeline, storyAt, type PitchProps, type Timeline} from './timeline';
 import {worldState} from './world/state';
@@ -9,7 +13,7 @@ import {World} from './world/World';
 import {Overlays} from './overlay/Overlays';
 import {VoGuide} from './overlay/VoGuide';
 
-loadFont('normal', {weights: ['400', '500', '600', '700', '800'], subsets: ['latin']});
+
 
 const MUSIC_VOLUME = 0.12;
 const MUSIC_DUCKED = 0.05;

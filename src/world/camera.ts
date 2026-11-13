@@ -42,7 +42,7 @@ export const CAMERA_KEYS: Key[] = [
   {s: at('energy-hub', 0.76), target: [DASH.x, DASH.y - 6, DASH.z], dist: 108, yaw: 0, pitch: 0.03, fov: 30},
   {s: at('energy-hub', 0.97), target: [DASH.x, DASH.y - 6, DASH.z], dist: 104, yaw: 0, pitch: 0.03, fov: 30},
   // 5 Warmtenet — in op de restwarmte, dan het leidingnet van bovenaf
-  {s: at('warmtenet', 0.14), target: [-19, 5, -12], dist: 58, yaw: -0.55, pitch: 0.42, fov: 32},
+  {s: at('warmtenet', 0.14), target: [-5, 5, 13], dist: 72, yaw: -0.55, pitch: 0.42, fov: 32},
   {s: at('warmtenet', 0.32), target: [-14, 3, -1], dist: 88, yaw: -0.35, pitch: 0.62, fov: 32},
   {s: at('warmtenet', 0.65), target: [-10, 0, 2], dist: 98, yaw: -0.05, pitch: 0.95, fov: 32},
   {s: at('warmtenet', 1.0), target: [-8, 0, 3], dist: 104, yaw: 0.12, pitch: 0.9, fov: 32},

@@ -17,18 +17,18 @@ Pitchvideo PowerUp Drenthe Hackathon 2026 · Track 3 · Energiek Innovatie Colle
 | 1. De uitdaging van vandaag | `public/vo/compact/scene-01.wav` | 8.4 s | 0:00.00 |
 | 2. Het echte probleem is groter | `public/vo/compact/scene-02.wav` | 6.7 s | 0:08.40 |
 | 3. Onze visie | `public/vo/compact/scene-03.wav` | 7.2 s | 0:15.10 |
-| 4. De slimme Energy Hub | `public/vo/compact/scene-04.wav` | 12.3 s | 0:22.27 |
-| 5. Elektriciteit, warmte en koude | `public/vo/compact/scene-05.wav` | 22.0 s | 0:34.60 |
-| 6. Ruimtelijke transformatie | `public/vo/compact/scene-06.wav` | 9.6 s | 0:56.57 |
-| 7. Praktijkvoorbeeld Haulerwijk | `public/vo/compact/scene-07.wav` | 4.1 s | 1:06.13 |
-| 8. Samenwerking en eigenaarschap | `public/vo/compact/scene-08.wav` | 7.1 s | 1:10.20 |
-| 9. Economische en maatschappelijke voordelen | `public/vo/compact/scene-09.wav` | 5.9 s | 1:17.30 |
-| 10. Risico's en uitvoerbaarheid | `public/vo/compact/scene-10.wav` | 14.1 s | 1:23.20 |
-| 11. Definitieve afsluiter | `public/vo/compact/scene-11.wav` | 9.5 s | 1:37.33 |
-| 12. Het team | `public/vo/compact/scene-12.wav` | 4.8 s | 1:46.83 |
-| Eindkaart (geen VO) | — | 4.0 s | 1:51.67 |
+| 4. De slimme Energy Hub | `public/vo/compact/scene-04.wav` | 12.1 s | 0:22.27 |
+| 5. Elektriciteit, warmte en koude | `public/vo/compact/scene-05.wav` | 22.0 s | 0:34.40 |
+| 6. Ruimtelijke transformatie | `public/vo/compact/scene-06.wav` | 9.6 s | 0:56.37 |
+| 7. Praktijkvoorbeeld Haulerwijk | `public/vo/compact/scene-07.wav` | 4.1 s | 1:05.93 |
+| 8. Samenwerking en eigenaarschap | `public/vo/compact/scene-08.wav` | 7.1 s | 1:10.00 |
+| 9. Economische en maatschappelijke voordelen | `public/vo/compact/scene-09.wav` | 5.9 s | 1:17.10 |
+| 10. Risico's en uitvoerbaarheid | `public/vo/compact/scene-10.wav` | 14.1 s | 1:23.00 |
+| 11. Definitieve afsluiter | `public/vo/compact/scene-11.wav` | 9.5 s | 1:37.13 |
+| 12. Het team | `public/vo/compact/scene-12.wav` | 4.8 s | 1:46.63 |
+| Eindkaart (geen VO) | — | 4.0 s | 1:51.47 |
 
-**Totaal met actuele opnames: 115.7 s.**
+**Totaal met actuele opnames: 115.5 s.**
 
 ---
 
@@ -58,11 +58,11 @@ Pitchvideo PowerUp Drenthe Hackathon 2026 · Track 3 · Energiek Innovatie Colle
 
 ## Scène 4 — De slimme Energy Hub
 
-**Bestand:** `public/vo/compact/scene-04.wav` · **Doelduur:** 12.3 s (26 woorden, ±11.3 s spreektijd)
+**Bestand:** `public/vo/compact/scene-04.wav` · **Doelduur:** 12.1 s (27 woorden, ±11.1 s spreektijd)
 
-> Met een gezamenlijke Energy Hub benutten bedrijven energie slimmer. Lokale opwekking, opslag en afgestemde laad- en productiemomenten helpen stroompieken beperken. Het dashboard maakt de energiebalans inzichtelijk.
+> De Energy Hub brengt ons van vraaggestuurde naar aanbodgestuurde energielevering. We stemmen flexibel laden en produceren af op beschikbare opwek en netruimte. Lokale opslag helpt stroompieken beperken.
 
-**In beeld:** De Energy Hub met batterijen rijst op. Eén kabel van de netaansluiting ("levert zoals afgesproken"), een smart grid naar alle panden, zonnepanelen klappen open, windturbine en zonnepark leveren mee. De batterij laadt en vangt een piek op. Daarna vliegt de camera naar het dashboard met elektriciteit, warmte en koude uit het gedeelde kwartiermodel; onderaan de berekende gevraagde netpiek per scenario.
+**In beeld:** De Energy Hub met batterijen rijst op. In beeld: “Van vraaggestuurd naar aanbodgestuurd”; flexibel laden en produceren schuiven naar beschikbare opwek en netruimte. Eén kabel van de netaansluiting ("levert zoals afgesproken"), een smart grid naar alle panden, zonnepanelen klappen open, windturbine en zonnepark leveren mee. De batterij laadt en vangt een piek op. Daarna vliegt de camera naar het dashboard met elektriciteit, warmte en koude uit het gedeelde kwartiermodel; onderaan de berekende gevraagde netpiek per scenario.
 
 ## Scène 5 — Elektriciteit, warmte en koude
 

@@ -84,14 +84,14 @@ export const SCENES: SceneDef[] = [
     id: 'energy-hub',
     audioFile: 'vo/compact/scene-04.wav',
     title: 'De slimme Energy Hub',
-    vo: 'Met een gezamenlijke Energy Hub benutten bedrijven energie slimmer. Lokale opwekking, opslag en afgestemde laad- en productiemomenten helpen stroompieken beperken. Het dashboard maakt de energiebalans inzichtelijk.',
+    vo: 'De Energy Hub brengt ons van vraaggestuurde naar aanbodgestuurde energielevering. We stemmen flexibel laden en produceren af op beschikbare opwek en netruimte. Lokale opslag helpt stroompieken beperken.',
     keywords: [
-      {text: 'Gezamenlijke Energy Hub', cue: 'gezamenlijke'},
-      {text: 'Lokaal opwekken en opslaan', cue: 'Lokale'},
+      {text: 'Van vraag- naar aanbodgestuurd', cue: 'vraaggestuurde'},
+      {text: 'Gebruik volgt beschikbaar aanbod', cue: 'flexibel'},
       {text: 'Pieken beperken', cue: 'stroompieken'},
     ],
     visual:
-      'De Energy Hub met batterijen rijst op. Eén kabel van de netaansluiting ("levert zoals afgesproken"), een smart grid naar alle panden, zonnepanelen klappen open, windturbine en zonnepark leveren mee. De batterij laadt en vangt een piek op. Daarna vliegt de camera naar het dashboard met elektriciteit, warmte en koude uit het gedeelde kwartiermodel; onderaan de berekende gevraagde netpiek per scenario.',
+      'De Energy Hub met batterijen rijst op. In beeld: “Van vraaggestuurd naar aanbodgestuurd”; flexibel laden en produceren schuiven naar beschikbare opwek en netruimte. Eén kabel van de netaansluiting ("levert zoals afgesproken"), een smart grid naar alle panden, zonnepanelen klappen open, windturbine en zonnepark leveren mee. De batterij laadt en vangt een piek op. Daarna vliegt de camera naar het dashboard met elektriciteit, warmte en koude uit het gedeelde kwartiermodel; onderaan de berekende gevraagde netpiek per scenario.',
   },
   {
     id: 'warmtenet',

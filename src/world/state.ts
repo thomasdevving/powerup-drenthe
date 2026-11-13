@@ -58,15 +58,15 @@ export const worldState = (st: Story) => {
 
   // ---- 4. De slimme Energy Hub
   const H = 'energy-hub';
-  const hubRise = seg(c(H), cue(H, 'Energy') - 0.08, cue(H, 'Energy') + 0.06, easeOut);
-  const supplyCable = seg(c(H), cue(H, 'gezamenlijke') - 0.02, cue(H, 'Hub') + 0.06);
-  const ring = seg(c(H), cue(H, 'benutten'), cue(H, 'slimmer.'), lin);
-  const solarOpen = seg(c(H), cue(H, 'Lokale') - 0.03, cue(H, 'Lokale') + 0.06);
-  const turbine = seg(c(H), cue(H, 'opwekking,') - 0.03, cue(H, 'opwekking,') + 0.06, easeOut);
-  const parkLink = seg(c(H), cue(H, 'opwekking,'), cue(H, 'opslag') + 0.02);
-  const charge = seg(c(H), cue(H, 'opslag') - 0.03, cue(H, 'afgestemde'));
-  const peak = seg(c(H), cue(H, 'afgestemde') - 0.02, cue(H, 'afgestemde') + 0.03) * (1 - seg(s, at(H, 0.72), at(H, 0.8)));
-  const discharge = seg(c(H), cue(H, 'productiemomenten') - 0.02, cue(H, 'stroompieken'));
+  const hubRise = seg(c(H), 0.0, 0.12, easeOut);
+  const supplyCable = seg(c(H), 0.08, 0.20);
+  const ring = seg(c(H), 0.15, 0.28, lin);
+  const solarOpen = seg(c(H), 0.25, 0.35);
+  const turbine = seg(c(H), 0.29, 0.40, easeOut);
+  const parkLink = seg(c(H), 0.30, 0.45);
+  const charge = seg(c(H), 0.35, 0.55);
+  const peak = seg(c(H), 0.52, 0.60) * (1 - seg(c(H), 0.72, 0.80));
+  const discharge = seg(c(H), 0.58, 0.70);
   const battery =
     s < at(H, 0) ? 0.15 : s >= at('warmtenet', 0) ? 0.62 + 0.18 * seg(c('warmtenet'), 0, 1) : clamp01(0.15 + charge * 0.75 - discharge * 0.35);
   const gridOn = Math.max(ring, s >= at('warmtenet', 0) ? 1 : 0);

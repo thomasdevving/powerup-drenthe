@@ -6,7 +6,7 @@ Alles is procedureel opgebouwd uit primitives (geen externe 3D-modellen). Output
 
 ## Multi-Commodity-versie · maximaal twee minuten
 
-De pitch duurt met de nieuwe Nederlandse synthetische voice-over **115,67 seconden**, inclusief eindkaart. De bestaande 3D-wereld, camera, kleuren en materialen zijn behouden; warmte, koude en begrensde thermische opslag zijn geïntegreerd. Het praktijkvoorbeeld, de vergelijking en het team zijn ingekort. Een render boven 120 seconden wordt geweigerd.
+De pitch duurt met de nieuwe Nederlandse synthetische voice-over **115,47 seconden**, inclusief eindkaart. De bestaande 3D-wereld, camera, kleuren en materialen zijn behouden; warmte, koude en begrensde thermische opslag zijn geïntegreerd. Het praktijkvoorbeeld, de vergelijking en het team zijn ingekort. Een render boven 120 seconden wordt geweigerd.
 
 Het bestaande dashboard bevat nu **Multi-Commodity Energy Management** met scenario A/B/C, warmtenet aan/uit, COP, buffer, leidingverliezen en terugwinbaar bronvermogen. Alle grafieken, facturatie en videowaarden gebruiken het gedeelde kwartiermodel in `src/energy/`. Tekorten boven de netlimiet blijven zichtbaar; kostenvoordelen worden niet geclaimd bij ongelijke levering.
 

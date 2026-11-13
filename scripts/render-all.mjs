@@ -109,8 +109,9 @@ const render = async (id, file) => {
     browserExecutable,
     concurrency: Number(process.env.CONCURRENCY ?? 6),
     overwrite: true,
-    onProgress: ({progress}) => {
-      const pct = Math.floor(progress * 10) * 10;
+    onProgress: ({progress, renderedFrames, renderEstimatedTime}) => {
+      fs.writeFileSync(path.join(outDir, 'render-progress.json'), JSON.stringify({progress, renderedFrames, renderEstimatedTime, updatedAt: new Date().toISOString()}));
+      const pct = Math.floor(progress * 20) * 5;
       if (pct !== last) {
         last = pct;
         console.log(`  ${file}: ${pct}%`);

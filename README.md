@@ -10,7 +10,7 @@ De pitch duurt met de nieuwe Nederlandse synthetische voice-over **115,47 second
 
 Het bestaande dashboard bevat nu **Multi-Commodity Energy Management** met scenario A/B/C, warmtenet aan/uit, COP, buffer, leidingverliezen en terugwinbaar bronvermogen. Alle grafieken, facturatie en videowaarden gebruiken het gedeelde kwartiermodel in `src/energy/`. Tekorten boven de netlimiet blijven zichtbaar; kostenvoordelen worden niet geclaimd bij ongelijke levering.
 
-- [Video](out/pitch.mp4) · [Script en draaiboek als PDF](VOICEOVER.pdf) · [Gidsvideo](out/pitch-vo-gids.mp4) · [Ondertiteling](out/voiceover.srt)
+- [Video](out/pitch.mp4) · [Compact script als PDF](SCRIPT.pdf) · [Uitgebreid draaiboek](VOICEOVER.pdf) · [Gidsvideo](out/pitch-vo-gids.mp4) · [Ondertiteling](out/voiceover.srt)
 - [Technische aannames, grenzen en controles](TECHNICAL.md)
 - Nieuwe audio: `public/vo/compact/scene-01.wav` t/m `scene-12.wav`; oudere opnames blijven behouden.
 - Fonts worden lokaal gebundeld via `@fontsource/inter`.
@@ -28,6 +28,8 @@ Renderen op een machine zonder GPU:
 ```bash
 GL=swangle CONCURRENCY=2 npm run render
 npm run vo-pdf
+npm run script:pdf
+npm run verify:deliverables
 ```
 
 De gids hergebruikt de definitieve 3D-render en voegt met FFmpeg een leeslaag met woordmarkering toe. FFmpeg is daarom nodig voor de gids. `CHROME_PATH` kan een eigen Chromium-pad aanwijzen; anders gebruikt de workflow systeem-Chromium als dat aanwezig is, of de standaard Remotion-browser.

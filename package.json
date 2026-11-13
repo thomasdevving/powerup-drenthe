@@ -7,6 +7,8 @@
     "test": "node scripts/test-energy.mjs",
     "typecheck": "tsc --noEmit && tsc --noEmit -p web/tsconfig.json",
     "render:guide": "node scripts/guide-from-pitch.mjs",
+    "script:pdf": "node scripts/voiceover-pdf.mjs --compact",
+    "verify:deliverables": "node scripts/verify-deliverables.mjs",
     "studio": "remotion studio",
     "still": "node scripts/stills.mjs",
     "render": "node scripts/render-all.mjs",

@@ -74,7 +74,7 @@ export function MultiCommodity({s, set, t, onTime}: {s: Settings; set: (s: Parti
       </svg>
     </div>
     <div className="multi-company"><label>Bekijk bedrijf <select aria-label="Bedrijf warmte en koude" value={company} onChange={e => setCompany(+e.target.value)}>{COMPANIES.map((v, i) => <option key={v.id} value={i}>{v.name}</option>)}</select></label><p><b>{c.name}</b> · warmtevraag {n(x.perHeat[company])} kWth · uit net/buffer {n(x.perDelivered[company])} kWth · koelvraag {n(x.perCold[company])} kWth</p></div>
-    <BalanceChart day={day} t={t} onTime={onTime}/>
+    <div className="multi-daychart"><BalanceChart day={day} t={t} onTime={onTime}/></div>
     <p className="note">Geel: elektriciteitsvraag · cyaan: netimport · oranje: warmtevraag · groen: warmte uit net en buffer. Klik op een tijdstip; de tijdlijn hierboven bedient alle grafieken.</p>
     <div className="multi-balances"><p><b>Elektrische balans {fmtTime(x.h)}</b><br/>{n(x.grid)} net + {n(x.solar + x.wind)} opwek + {n(x.discharge)} batterij + {n(x.shortfall)} tekort = {n(x.demand)} vraag + {n(x.charge)} laden + {n(x.curtailed)} afregelen (kW).</p><p><b>Warmtebalans</b><br/>{n(x.heatPumpHeat)} warmtepomp + {n(x.backupHeat)} aanvullend + {n(x.bufferDischarge)} buffer = {n(x.heatDemand)} vraag + {n(x.bufferCharge)} opslaan (kWth). Afrondingsverschillen mogelijk.</p></div>
     <h3>Dezelfde dag, drie scenario’s</h3>

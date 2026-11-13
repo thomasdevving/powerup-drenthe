@@ -16,9 +16,11 @@
 .carrier-grid strong { display: block; font-size: 29px; margin-top: 12px; }
 .carrier-grid small { font-size: 12px; font-weight: 500; }
 .carrier-grid p, .multi-company p, .multi-balances p, .multi details p { font-size: 13px; line-height: 1.6; color: var(--muted); }
-.multi-flow { border: 1px solid var(--line); border-radius: 14px; background: #0a151f; }
+.multi-flow { border: 1px solid var(--line); border-radius: 14px; background: #0a151f; overflow-x: auto; }
+.multi-daychart { overflow-x: auto; }
 .multi svg { width: 100%; height: auto; font: 13px Inter,system-ui,sans-serif; display: block; }
 .multi-flow svg { font-size: 15px; }
+.multi-flow svg, .multi-daychart svg { min-width: 720px; }
 .heat-flow { stroke: #ff9d2e; stroke-width: 4; fill: none; opacity: .15; }
 .heat-flow.active { opacity: 1; stroke-dasharray: 12 8; animation: heat-travel 1.4s linear infinite; }
 @keyframes heat-travel { to { stroke-dashoffset: -40; } }

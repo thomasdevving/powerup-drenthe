@@ -30,7 +30,7 @@ De compacte versie bevat 12 bestaande scène-id's, met sterk ingekorte tekst (22
 
 De 3D-warmtebuffer en het video-dashboard volgen dezelfde winterdag. De vergelijking gebruikt berekende waarden, zonder vaste besparingspercentages. Het blauwe circuit visualiseert koeling; de netwarmtepomp en zijn elektrische input zijn zichtbaar. De leidingen liggen voor leesbaarheid als schematische doorsnede op maaiveldniveau; dit is geen civieltechnisch ontwerp.
 
-`VOICEOVER.md`, `VOICEOVER.pdf`, `out/voiceover.srt` en `out/timeline.json` komen uit dezelfde scènebron. De gidsvideo hergebruikt de definitieve MP4 en voegt een scènelabel en leeslaag met woordmarkering toe. De markering en ondertitels volgen geschatte woordposities binnen de echte opnameduur; het zijn geen woordniveau-forced-alignmentdata.
+`SCRIPT.pdf` (compacte spreektekst), `VOICEOVER.md`, `VOICEOVER.pdf` (uitgebreid draaiboek), `out/voiceover.srt` en `out/timeline.json` komen uit dezelfde scènebron. De gidsvideo hergebruikt de definitieve MP4 en voegt een scènelabel en leeslaag met woordmarkering toe. De markering en ondertitels volgen geschatte woordposities binnen de echte opnameduur; het zijn geen woordniveau-forced-alignmentdata.
 
 ## Controles
 

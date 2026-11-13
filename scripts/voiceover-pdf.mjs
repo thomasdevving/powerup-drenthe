@@ -121,12 +121,23 @@ const html = `<!doctype html>
   </div>
 </body></html>`;
 
-const htmlPath = path.join(ROOT, 'out/voiceover.html');
-const pdfPath = path.join(ROOT, 'VOICEOVER.pdf');
-fs.writeFileSync(htmlPath, html);
+const compact = process.argv.includes('--compact');
+const scriptHtml = `<!doctype html><html lang="nl"><head><meta charset="utf-8"><title>Pitchscript · Multi-Commodity Energy Hub</title><style>
+@page {size:A4; margin:14mm 17mm;} * {box-sizing:border-box;} body {font-family:Arial,Helvetica,sans-serif; color:#14212b; margin:0; font-size:10pt; line-height:1.35;}
+h1 {font-size:22pt; line-height:1.1; letter-spacing:-.5pt; margin:0 0 6pt;} .sub {font-size:9pt; color:#51606d; margin-bottom:10pt;}
+.stats {padding:8pt 10pt; background:#eef6f5; border-left:3pt solid #0b8e81; margin:10pt 0 12pt; print-color-adjust:exact;}
+.script-scene {break-inside:avoid; margin:0 0 5pt;} .script-scene h2 {font-size:10pt; margin:0 0 2pt; color:#0b6e64;} .time {font-weight:400; color:#51606d; margin-left:8pt; font-size:8.5pt;} .script-scene p {font-size:11pt; margin:0; line-height:1.35;} .end {font-size:8.5pt; color:#51606d; border-top:1pt solid #d4dbe0; padding-top:7pt;}
+</style></head><body><h1>Pitchscript<br>Multi-Commodity Energy Hub</h1><div class="sub">PowerUp Drenthe 2026 · Track 3 · Energiek Innovatie Collectief</div>
+<div class="stats"><b>${s1(total)} seconden inclusief ${s1(outro)} s eindkaart · ${tl.scenes.reduce((n, s) => n + s.vo.trim().split(/\s+/).length, 0)} woorden</b><br>Alleen onderstaande alinea’s worden uitgesproken. Kopjes en tijdcodes zijn leesaanwijzingen.</div>
+${tl.scenes.map((s, i) => `<section class="script-scene"><h2>${String(i + 1).padStart(2, '0')} · ${esc(s.title)}<span class="time">${t(s.startFrame / tl.fps)}–${t((s.startFrame + s.durationInFrames) / tl.fps)}</span></h2><p>${esc(s.vo)}</p></section>`).join('')}
+</body></html>`;
+const printHtml = compact ? scriptHtml : html;
+const htmlPath = path.join(ROOT, compact ? 'out/script.html' : 'out/voiceover.html');
+const pdfPath = path.join(ROOT, compact ? 'SCRIPT.pdf' : 'VOICEOVER.pdf');
+fs.writeFileSync(htmlPath, printHtml);
 // Afdrukken via de headless Chrome van Remotion (DevTools: Page.printToPDF)
 const browser = await openBrowser('chrome', {chromiumOptions: {gl: 'swangle'}, browserExecutable});
-const server = createServer((_req, res) => {res.setHeader('Content-Type', 'text/html; charset=utf-8'); res.end(html);});
+const server = createServer((_req, res) => {res.setHeader('Content-Type', 'text/html; charset=utf-8'); res.end(printHtml);});
 await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
 try {
   const page = await browser.newPage({context: () => null, logLevel: 'error', indent: false, pageIndex: 0, onBrowserLog: null, onLog: () => {}});

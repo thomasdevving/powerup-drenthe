@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import type {Story} from '../timeline';
-import {DASH, TRAFO} from './layout';
+import {DASH} from './layout';
+import {at} from './state';
 import {DRENTHE_CENTER, NL_CENTER} from './geo';
 
 /**
@@ -22,40 +23,50 @@ const D = DRENTHE_CENTER;
 const N = NL_CENTER;
 
 export const CAMERA_KEYS: Key[] = [
-  // 1 Hook — luchtbeeld bij schemering
-  {s: 0.0, target: [-60, 0, -120], dist: 950, yaw: -0.55, pitch: 0.2, fov: 30},
-  {s: 0.55, target: [-40, 0, -60], dist: 560, yaw: -0.45, pitch: 0.27, fov: 30},
-  {s: 1.0, target: [-28, 0, -30], dist: 300, yaw: -0.38, pitch: 0.38, fov: 30},
-  // 2 Probleem — camera zakt het terrein in
-  {s: 1.3, target: [-30, 3, -9], dist: 120, yaw: -0.5, pitch: 0.4, fov: 32},
-  {s: 1.6, target: [-16, 3, -9], dist: 140, yaw: -0.25, pitch: 0.44, fov: 32},
-  {s: 2.0, target: [-12, 2, -6], dist: 165, yaw: -0.05, pitch: 0.5, fov: 32},
-  // 3 Gemiste kans — zonnepark ernaast
-  {s: 2.45, target: [42, 0, 4], dist: 225, yaw: 0.1, pitch: 0.6, fov: 30},
-  {s: 3.0, target: [46, 0, 4], dist: 240, yaw: 0.16, pitch: 0.64, fov: 30},
-  // 4 Omslag — rustig omhoog, terug naar het terrein
-  {s: 3.5, target: [20, 0, 2], dist: 260, yaw: 0.05, pitch: 0.82, fov: 30},
-  {s: 4.0, target: [0, 0, 0], dist: 170, yaw: 0.2, pitch: 0.75, fov: 30},
-  // 5 Energy Hub
-  {s: 4.18, target: [0, 3, 0], dist: 85, yaw: 0.55, pitch: 0.48, fov: 32},
-  {s: 4.42, target: [-18, 2, -2], dist: 120, yaw: 0.3, pitch: 0.52, fov: 32},
-  {s: 4.72, target: [2, 2, 2], dist: 122, yaw: -0.15, pitch: 0.58, fov: 32},
-  {s: 5.0, target: [0, 6, 2], dist: 118, yaw: -0.05, pitch: 0.5, fov: 32},
-  // 6 Dashboard — vlieg naar het zwevende paneel
-  {s: 5.16, target: [DASH.x, DASH.y - 6, DASH.z], dist: 108, yaw: 0, pitch: 0.03, fov: 30},
-  {s: 5.88, target: [DASH.x, DASH.y - 6, DASH.z], dist: 104, yaw: 0, pitch: 0.03, fov: 30},
-  // 7 Koel, groen en samen
-  {s: 6.15, target: [0, 0, 2], dist: 135, yaw: 0.55, pitch: 0.62, fov: 32},
-  {s: 7.0, target: [0, 0, 0], dist: 120, yaw: 0.9, pitch: 0.55, fov: 32},
-  // 8 Win-win — trafo links, terrein rechts
-  {s: 7.2, target: [(TRAFO.x + 20) / 2 - 2, 0, -2], dist: 160, yaw: 0.04, pitch: 0.5, fov: 32},
-  {s: 8.0, target: [(TRAFO.x + 20) / 2, 0, -2], dist: 150, yaw: 0.0, pitch: 0.52, fov: 32},
-  // 9 Opschalen — uit naar Drenthe, dan Nederland
-  {s: 8.07, target: [0, 0, 0], dist: 260, yaw: 0.0, pitch: 0.95, fov: 32},
-  {s: 8.24, target: [D[0], 0, D[1] + 300], dist: 12500, yaw: 0, pitch: 1.3, fov: 32},
-  {s: 8.42, target: [D[0], 0, D[1] + 300], dist: 11800, yaw: 0, pitch: 1.32, fov: 32},
-  {s: 8.7, target: [N[0], 0, N[1]], dist: 50000, yaw: 0, pitch: 1.38, fov: 32},
-  {s: 9.0, target: [N[0], 0, N[1]], dist: 53000, yaw: 0, pitch: 1.38, fov: 32},
+  // 1 De uitdaging — luchtbeeld bij schemering, dan het terrein in
+  {s: at('uitdaging', 0.0), target: [-60, 0, -120], dist: 950, yaw: -0.55, pitch: 0.2, fov: 30},
+  {s: at('uitdaging', 0.3), target: [-40, 0, -60], dist: 560, yaw: -0.45, pitch: 0.27, fov: 30},
+  {s: at('uitdaging', 0.55), target: [-30, 2, -20], dist: 230, yaw: -0.4, pitch: 0.38, fov: 31},
+  {s: at('uitdaging', 0.82), target: [-30, 3, -9], dist: 125, yaw: -0.5, pitch: 0.4, fov: 32},
+  // 2 Het probleem is groter — overzicht van het hele terrein
+  {s: at('groter-probleem', 0.2), target: [4, 0, 2], dist: 170, yaw: -0.12, pitch: 0.72, fov: 32},
+  {s: at('groter-probleem', 0.7), target: [4, 0, 2], dist: 160, yaw: 0.12, pitch: 0.74, fov: 32},
+  {s: at('groter-probleem', 1.0), target: [4, 0, 2], dist: 168, yaw: 0.22, pitch: 0.76, fov: 32},
+  // 3 Visie — camera stijgt op
+  {s: at('visie', 0.55), target: [8, 0, 0], dist: 270, yaw: 0.25, pitch: 0.95, fov: 30},
+  {s: at('visie', 1.0), target: [0, 0, 0], dist: 190, yaw: 0.35, pitch: 0.8, fov: 30},
+  // 4 Energy Hub + dashboard
+  {s: at('energy-hub', 0.14), target: [0, 3, 0], dist: 85, yaw: 0.55, pitch: 0.48, fov: 32},
+  {s: at('energy-hub', 0.36), target: [-18, 2, -2], dist: 120, yaw: 0.3, pitch: 0.52, fov: 32},
+  {s: at('energy-hub', 0.6), target: [10, 2, 2], dist: 145, yaw: -0.12, pitch: 0.58, fov: 32},
+  {s: at('energy-hub', 0.76), target: [DASH.x, DASH.y - 6, DASH.z], dist: 108, yaw: 0, pitch: 0.03, fov: 30},
+  {s: at('energy-hub', 0.97), target: [DASH.x, DASH.y - 6, DASH.z], dist: 104, yaw: 0, pitch: 0.03, fov: 30},
+  // 5 Warmtenet — in op de restwarmte, dan het leidingnet van bovenaf
+  {s: at('warmtenet', 0.14), target: [-19, 5, -12], dist: 58, yaw: -0.55, pitch: 0.42, fov: 32},
+  {s: at('warmtenet', 0.32), target: [-14, 3, -1], dist: 88, yaw: -0.35, pitch: 0.62, fov: 32},
+  {s: at('warmtenet', 0.65), target: [-10, 0, 2], dist: 98, yaw: -0.05, pitch: 0.95, fov: 32},
+  {s: at('warmtenet', 1.0), target: [-8, 0, 3], dist: 104, yaw: 0.12, pitch: 0.9, fov: 32},
+  // 6 Ruimte — rond het terrein naar het laadplein
+  {s: at('ruimte', 0.3), target: [2, 0, 2], dist: 140, yaw: 0.5, pitch: 0.62, fov: 32},
+  {s: at('ruimte', 0.62), target: [24, 0, 3], dist: 120, yaw: 0.8, pitch: 0.6, fov: 32},
+  {s: at('ruimte', 1.0), target: [36, 0, 3], dist: 92, yaw: 0.95, pitch: 0.62, fov: 32},
+  // 7 Haulerwijk — rustig, gedimd overzicht
+  {s: at('haulerwijk', 1.0), target: [10, 0, 2], dist: 190, yaw: 0.6, pitch: 0.85, fov: 30},
+  // 8 Coöperatie — boven de hub, lijnen naar alle panden
+  {s: at('cooperatie', 0.25), target: [0, 8, 0], dist: 125, yaw: 0.35, pitch: 0.58, fov: 32},
+  {s: at('cooperatie', 1.0), target: [0, 8, 0], dist: 118, yaw: 0.8, pitch: 0.62, fov: 32},
+  // 9 Voordelen / 10 Risico's — langzaam draaiend achter de kaarten
+  {s: at('voordelen', 1.0), target: [6, 0, 2], dist: 180, yaw: 1.0, pitch: 0.7, fov: 30},
+  {s: at('risicos', 1.0), target: [6, 0, 2], dist: 190, yaw: 1.25, pitch: 0.75, fov: 30},
+  // 11 Afsluiter — op boven het getransformeerde terrein, uit naar Drenthe en Nederland
+  {s: at('afsluiter', 0.15), target: [6, 0, 2], dist: 175, yaw: 1.1, pitch: 0.95, fov: 30},
+  {s: at('afsluiter', 0.4), target: [4, 0, 2], dist: 420, yaw: 0.5, pitch: 1.15, fov: 30},
+  {s: at('afsluiter', 0.56), target: [D[0], 0, D[1] + 300], dist: 12500, yaw: 0, pitch: 1.3, fov: 32},
+  {s: at('afsluiter', 0.8), target: [D[0], 0, D[1] + 300], dist: 11800, yaw: 0, pitch: 1.32, fov: 32},
+  {s: at('afsluiter', 0.97), target: [N[0], 0, N[1]], dist: 50000, yaw: 0, pitch: 1.38, fov: 32},
+  {s: at('afsluiter', 1.0), target: [N[0], 0, N[1]], dist: 53000, yaw: 0, pitch: 1.38, fov: 32},
+  // 12 Team — kaart van Nederland blijft rustig staan
+  {s: at('team', 1.0), target: [N[0], 0, N[1] - 600], dist: 55000, yaw: 0, pitch: 1.38, fov: 32},
 ];
 
 type Pose = {position: THREE.Vector3; target: THREE.Vector3; fov: number; near: number; far: number; dist: number};

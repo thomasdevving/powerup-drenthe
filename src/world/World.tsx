@@ -9,6 +9,7 @@ import {Landscape} from './Landscape';
 import {Grid} from './Grid';
 import {Site} from './Site';
 import {MapLayer} from './MapLayer';
+import {Future} from './Future';
 
 const CameraRig: React.FC<{story: Story}> = ({story}) => {
   const {camera} = useThree();
@@ -143,6 +144,7 @@ export const World: React.FC<{
       <Landscape ws={ws} />
       {ws.localFade < 0.999 ? <Grid ws={ws} sec={sec} /> : null}
       <Site ws={ws} sec={sec} />
+      <Future ws={ws} sec={sec} />
       <MapLayer ws={ws} camDist={pose.dist} />
     </>
   );

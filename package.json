@@ -2,14 +2,15 @@
   "name": "energy-hub-pitch",
   "version": "1.0.0",
   "private": true,
-  "description": "Energy Hub pitchvideo — PowerUp Drenthe Hackathon 2026 (Energiek Innovatie Collectief)",
+  "description": "Energy Hub pitchvideo \u2014 PowerUp Drenthe Hackathon 2026 (Energiek Innovatie Collectief)",
   "scripts": {
     "studio": "remotion studio",
     "still": "node scripts/stills.mjs",
     "render": "node scripts/render-all.mjs",
     "render:pitch": "remotion render Pitch out/pitch.mp4",
     "render:gids": "remotion render PitchVoGids out/pitch-vo-gids.mp4",
-    "srt": "node scripts/render-all.mjs --srt-only"
+    "srt": "node scripts/render-all.mjs --srt-only",
+    "vo-pdf": "node scripts/voiceover-pdf.mjs"
   },
   "type": "module",
   "dependencies": {

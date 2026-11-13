@@ -2,7 +2,7 @@ import React, {useLayoutEffect, useMemo, useRef} from 'react';
 import * as THREE from 'three';
 import {C, clamp01} from '../util';
 import type {WorldState} from './state';
-import {DRENTHE_SITES, DRENTHE_XY, IJSSEL_XY, NL_SITES, NL_XY} from './geo';
+import {DRENTHE_SITES, DRENTHE_XY, NL_SITES, PROVINCE_XY} from './geo';
 
 /** Kaartlaag voor scène 9: Nederland, Drenthe en 120 terreinen die groen oplichten. */
 
@@ -64,20 +64,47 @@ const Dots: React.FC<{
 };
 
 export const MapLayer: React.FC<{ws: WorldState; camDist: number}> = ({ws, camDist}) => {
-  const nl = useMemo(() => shapeOf(NL_XY, [IJSSEL_XY]), []);
+  // Alle provincies als land; Drenthe apart uitgelicht
+  const provinces = useMemo(
+    () =>
+      PROVINCE_XY.filter((p) => p.name !== 'Drenthe').flatMap((p) => p.rings.map((r) => shapeOf(r))),
+    [],
+  );
+  const borders = useMemo(
+    () =>
+      PROVINCE_XY.flatMap((p) =>
+        p.rings.map((r) => {
+          const pts = [...r, r[0]].map(([x, z]) => new THREE.Vector3(x, 0, z));
+          const path = new THREE.CurvePath<THREE.Vector3>();
+          for (let i = 0; i < pts.length - 1; i++) path.add(new THREE.LineCurve3(pts[i], pts[i + 1]));
+          return new THREE.TubeGeometry(path, Math.max(40, r.length * 2), 9, 3, false);
+        }),
+      ),
+    [],
+  );
   const dr = useMemo(() => shapeOf(DRENTHE_XY), []);
+  // Rechte segmenten: hoeken (Ter Apel, Schoonebeek, Meppel) blijven scherp
   const drOutline = useMemo(() => {
-    const pts = DRENTHE_XY.map(([x, z]) => new THREE.Vector3(x, 0, z));
-    return new THREE.CatmullRomCurve3(pts, true, 'catmullrom', 0);
+    const pts = [...DRENTHE_XY, DRENTHE_XY[0]].map(([x, z]) => new THREE.Vector3(x, 0, z));
+    const path = new THREE.CurvePath<THREE.Vector3>();
+    for (let i = 0; i < pts.length - 1; i++) path.add(new THREE.LineCurve3(pts[i], pts[i + 1]));
+    return path;
   }, []);
-  const outlineGeo = useMemo(() => new THREE.TubeGeometry(drOutline, 200, 22, 4, true), [drOutline]);
+  const outlineGeo = useMemo(() => new THREE.TubeGeometry(drOutline, 400, 22, 4, false), [drOutline]);
   if (ws.map <= 0.001) return null;
   const o = ws.map;
   return (
     <group>
-      <mesh geometry={nl} rotation={[-Math.PI / 2, 0, 0]} position={[0, 30, 0]}>
-        <meshBasicMaterial side={THREE.DoubleSide} color="#f4f0e6" transparent opacity={o} depthWrite={o > 0.99} />
-      </mesh>
+      {provinces.map((g, i) => (
+        <mesh key={i} geometry={g} rotation={[-Math.PI / 2, 0, 0]} position={[0, 30, 0]}>
+          <meshBasicMaterial side={THREE.DoubleSide} color="#f4f0e6" transparent opacity={o} depthWrite={o > 0.99} />
+        </mesh>
+      ))}
+      {borders.map((g, i) => (
+        <mesh key={`b${i}`} geometry={g} position={[0, 31, 0]}>
+          <meshBasicMaterial color="#b9b2a2" transparent opacity={o} />
+        </mesh>
+      ))}
       <mesh geometry={dr} rotation={[-Math.PI / 2, 0, 0]} position={[0, 34, 0]}>
         <meshBasicMaterial side={THREE.DoubleSide} color="#d3e8b6" transparent opacity={o} depthWrite={o > 0.99} />
       </mesh>

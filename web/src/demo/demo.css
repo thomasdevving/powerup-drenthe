@@ -164,3 +164,46 @@
   .timebar { grid-template-columns: auto 1fr; grid-template-areas: 'play clock' 'scrub scrub' 'stats stats'; }
   .demo .brand .sub { display: none; }
 }
+
+/* facturatie */
+.billflow { display: flex; align-items: stretch; gap: 0; margin: 4px 0 14px; }
+.bf-node { background: var(--bg); border: 1px solid var(--line); border-radius: 12px; padding: 7px 10px; display: flex; flex-direction: column; min-width: 0; flex: 0 1 auto; }
+.bf-node b { font-size: 13.5px; }
+.bf-node small { font-size: 11.5px; color: var(--muted); }
+.bf-node.hub { border-color: rgba(33, 230, 208, 0.5); }
+.bf-arrow { flex: 1 1 90px; min-width: 90px; display: flex; align-items: center; justify-content: center; position: relative; padding: 0 10px; }
+.bf-arrow::before { content: ''; position: absolute; left: 6px; right: 12px; top: 50%; border-top: 2px solid #169c8f; }
+.bf-arrow::after { content: ''; position: absolute; right: 6px; top: calc(50% - 5px); border: 5px solid transparent; border-left: 7px solid #169c8f; }
+.bf-arrow.red::before { border-top-color: #d9442b; }
+.bf-arrow.red::after { border-left-color: #d9442b; }
+.bf-arrow span { position: relative; background: var(--surface); padding: 0 6px; font-size: 11px; font-weight: 700; z-index: 1; white-space: nowrap; }
+.table-wrap { overflow-x: auto; }
+.billing table { width: 100%; border-collapse: collapse; font-size: 13px; font-variant-numeric: tabular-nums; }
+.billing th, .billing td { padding: 8px 6px; text-align: left; border-bottom: 1px solid var(--line); white-space: nowrap; }
+.billing thead th { font-size: 12px; color: var(--muted); font-weight: 600; }
+.billing .num { text-align: right; }
+.billing tbody tr { cursor: pointer; }
+.billing tbody tr:hover, .billing tbody tr.sel { background: var(--surface-2); }
+.billing tbody tr:focus-visible { outline: 2px solid #fff; outline-offset: -2px; }
+.billing tbody th { font-weight: 700; }
+.billing .num-badge { display: inline-flex; width: 20px; height: 20px; border-radius: 50%; background: #2a3b4c; font-size: 11px; font-weight: 800; align-items: center; justify-content: center; margin-right: 8px; }
+.billing .strong { font-weight: 800; }
+.billing tfoot th, .billing tfoot td { font-weight: 800; border-bottom: 0; }
+.billing .good { color: #4ef08a; font-weight: 700; }
+.billing .bad { color: #ff8a6b; font-weight: 700; }
+.billing .warn { color: #ff8a6b; font-weight: 700; }
+.invoice { margin-top: 14px; background: var(--bg); border-radius: 12px; padding: 12px 14px; }
+.inv-head { display: flex; justify-content: space-between; gap: 10px; font-size: 13.5px; margin-bottom: 6px; }
+.inv-line { display: flex; justify-content: space-between; gap: 12px; padding: 6px 0; border-bottom: 1px dashed var(--line); font-size: 13px; font-variant-numeric: tabular-nums; }
+.inv-line span { display: flex; flex-direction: column; }
+.inv-line small { color: var(--muted); font-size: 11.5px; }
+.inv-line .credit { color: #4ef08a; }
+.inv-line.total { border-bottom: 0; font-size: 14.5px; font-weight: 800; }
+
+@media (max-width: 860px) { .billflow { flex-direction: column; } .bf-arrow { min-height: 26px; } .bf-arrow::before { left: 50%; right: auto; top: 0; bottom: 0; border-top: 0; border-left: 2px solid #169c8f; } .bf-arrow::after { display: none; } }
+
+/* tabblad facturatie */
+.billing-controls { display: flex; flex-wrap: wrap; gap: 12px 16px; align-items: center; margin-bottom: 16px; }
+.billing-controls .seg { min-width: 260px; }
+.billing-controls p { margin: 0; font-size: 13px; }
+.demo > .billing { max-width: 1200px; }

@@ -3,15 +3,15 @@
  * Bewust lowpoly — het gaat om herkenbaarheid, niet om cartografische precisie.
  */
 import {rand} from '../util';
+import provincesJson from './provinces.json';
 
 export type LonLat = [number, number];
 
-export const DRENTHE: LonLat[] = [
-  [6.12, 52.85], [6.17, 52.95], [6.3, 53.0], [6.35, 53.08], [6.4, 53.11],
-  [6.45, 53.2], [6.6, 53.18], [6.7, 53.12], [6.8, 53.05], [6.9, 52.98],
-  [7.0, 52.93], [7.08, 52.85], [7.05, 52.72], [7.05, 52.64], [6.85, 52.65],
-  [6.72, 52.62], [6.55, 52.64], [6.4, 52.68], [6.3, 52.72], [6.2, 52.78],
-];
+/** Officiële provinciegrenzen (CBS, via PDOK, gegeneraliseerd 2024; vereenvoudigd). */
+export const PROVINCES = provincesJson as unknown as Record<string, LonLat[][]>;
+
+/** Contour van Drenthe: officiële CBS-grens. */
+export const DRENTHE: LonLat[] = PROVINCES['Drenthe'][0];
 
 export const NETHERLANDS: LonLat[] = [
   [3.36, 51.37], [3.8, 51.21], [4.25, 51.37], [4.55, 51.43], [4.85, 51.45],
@@ -74,6 +74,7 @@ const scatter = (
   minDist: number,
   exclude: [number, number][][] = [],
   preset: [number, number][] = [],
+  inside: (x: number, y: number) => boolean = (x, y) => pointInPoly(x, y, poly),
 ) => {
   const b = bbox(poly);
   const pts: [number, number][] = [...preset];
@@ -82,7 +83,7 @@ const scatter = (
     k++;
     const x = b.minX + rand(seed + k * 2.13) * (b.maxX - b.minX);
     const y = b.minY + rand(seed + k * 7.77) * (b.maxY - b.minY);
-    if (!pointInPoly(x, y, poly)) continue;
+    if (!inside(x, y)) continue;
     if (exclude.some((e) => pointInPoly(x, y, e))) continue;
     // marge t.o.v. de rand
     if (pts.some((p) => Math.hypot(p[0] - x, p[1] - y) < minDist)) continue;
@@ -93,9 +94,16 @@ const scatter = (
 
 export const DRENTHE_XY = projectPoly(DRENTHE);
 export const NL_XY = projectPoly(NETHERLANDS);
+/** Alle provincievlakken in wereldcoördinaten. */
+export const PROVINCE_XY: {name: string; rings: [number, number][][]}[] = Object.entries(PROVINCES).map(([name, rings]) => ({
+  name,
+  rings: rings.map(projectPoly),
+}));
+const ALL_RINGS = PROVINCE_XY.flatMap((p) => p.rings);
+const inNL = (x: number, y: number) => ALL_RINGS.some((r) => pointInPoly(x, y, r));
 export const IJSSEL_XY = projectPoly(IJSSELMEER);
 export const DRENTHE_CENTER = centroid(DRENTHE_XY);
-export const NL_CENTER = centroid(NL_XY);
+export const NL_CENTER = centroid(ALL_RINGS.flat());
 
 /** 120 bedrijventerreinen in Drenthe; de eerste is ons voorbeeldterrein (0,0). Gesorteerd op afstand → golf. */
 export const DRENTHE_SITES: [number, number][] = scatter(DRENTHE_XY, 120, 11, 330, [], [[0, 0]]).sort(
@@ -103,4 +111,4 @@ export const DRENTHE_SITES: [number, number][] = scatter(DRENTHE_XY, 120, 11, 33
 );
 
 /** Overige terreinen in NL (voor de landelijke uitrol). */
-export const NL_SITES: [number, number][] = scatter(NL_XY, 260, 97, 900, [DRENTHE_XY, IJSSEL_XY]);
+export const NL_SITES: [number, number][] = scatter(ALL_RINGS.flat(), 260, 97, 900, [DRENTHE_XY], [], inNL);

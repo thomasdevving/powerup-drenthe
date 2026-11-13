@@ -1,13 +1,12 @@
 import React from 'react';
-import {SCENES, cueFraction} from '../script';
-import type {Story} from '../timeline';
 import {C, clamp01, easeOut, seg} from '../util';
 
-/** Dashboardinhoud (SVG 640×360) — alle animatie op scène-progress van scène 6. */
+/**
+ * Dashboardinhoud (SVG 640×360). `p` is de lokale voortgang van het dashboarddeel
+ * in de Energy Hub-scène (0..1); `sec` alleen voor de live-pulsjes.
+ */
 
 const FONT = 'Inter, system-ui, sans-serif';
-const S = SCENES[5];
-const cue = (w: string) => cueFraction(S, w);
 
 const USAGE = [0.62, 0.48, 0.81, 0.55, 0.37, 0.9, 0.5, 0.42];
 const MIN = 0.4;
@@ -18,13 +17,11 @@ const base = (h: number) =>
 const peakBump = (h: number) => 0.38 * Math.exp(-Math.pow((h - 10) / 1.3, 2));
 const solar = (h: number) => (h > 7 && h < 19 ? 0.22 * Math.sin(((h - 7) / 12) * Math.PI) : 0);
 
-export const Dashboard: React.FC<{story: Story}> = ({story}) => {
-  const c = story.cprog(5);
-  const sec = story.sec;
-  const appear = seg(c, 0.0, 0.18, easeOut);
-  const minLine = seg(c, cue('gegarandeerd') - 0.04, cue('gegarandeerd') + 0.06);
-  const shift = seg(c, cue('schuiven') - 0.03, cue('slim,') + 0.08);
-  const sun = seg(c, cue('wekken') - 0.03, cue('op.') + 0.02);
+export const Dashboard: React.FC<{p: number; sec: number}> = ({p: c, sec}) => {
+  const appear = seg(c, 0.0, 0.16, easeOut);
+  const shift = seg(c, 0.16, 0.42); // piek afvlakken: verbruik schuift naar een rustig moment
+  const sun = seg(c, 0.38, 0.6); // eigen opwek erbij
+  const minLine = seg(c, 0.6, 0.78); // gegarandeerd minimum per bedrijf
 
   // ---- verbruik per pand (links)
   const bx = 28;

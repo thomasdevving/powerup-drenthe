@@ -289,3 +289,84 @@ export const fmtTime = (h: number) => {
   const mm = Math.round((h - Math.floor(h)) * 60);
   return `${String(hh).padStart(2, '0')}:${String(mm === 60 ? 0 : mm).padStart(2, '0')}`;
 };
+
+/* ------------------------------------------------------------------ facturatie */
+
+/**
+ * Indicatieve tarieven (excl. btw). Met Energy Hub stuurt de leverancier één factuur aan de
+ * coöperatie; de coöperatie verdeelt die per bedrijf op basis van de meetdata uit het dashboard.
+ */
+export const TARIFF = {
+  grid: 0.24, // €/kWh uit het net (energie + netkosten, all-in)
+  own: 0.12, // €/kWh intern tarief voor zon/wind uit het eigen smart grid
+  battery: 0.16, // €/kWh uit de batterij (incl. afschrijving opslag)
+  capacityPerKwDay: 0.3, // € per kW per dag: zonder hub per eigen piek, met hub per gegarandeerd minimum
+  flexCredit: 0.06, // €/kWh vergoeding voor geschoven verbruik
+  feedInCredit: 0.1, // €/kWh vergoeding voor eigen dakopwek die het smart grid in gaat
+};
+
+export type BillLine = {label: string; detail: string; amount: number};
+
+export type CompanyBill = {
+  id: number;
+  name: string;
+  useKwh: number;
+  gridKwh: number;
+  ownKwh: number;
+  batteryKwh: number;
+  shiftedKwh: number;
+  unservedKwh: number;
+  peakKw: number;
+  roofKwh: number;
+  lines: BillLine[];
+  total: number;
+};
+
+const eur = (x: number) => x;
+
+export const billing = (r: DayResult, s: Settings): CompanyBill[] =>
+  COMPANIES.map((c, k) => {
+    let useKwh = 0;
+    let gridKwh = 0;
+    let ownKwh = 0;
+    let batteryKwh = 0;
+    let shiftedKwh = 0;
+    let unservedKwh = 0;
+    let roofKwh = 0;
+    let peakKw = 0;
+    for (const st of r.steps) {
+      const p = st.perCompany[k];
+      useKwh += p.use * DT;
+      peakKw = Math.max(peakKw, p.use);
+      roofKwh += p.pv * DT;
+      if (s.hub) {
+        // pool: ieder bedrijf krijgt naar rato van zijn verbruik uit net, eigen opwek en batterij
+        const share = st.demand > 0 ? p.use / st.demand : 0;
+        gridKwh += st.gridToLoad * share * DT;
+        ownKwh += st.ownToLoad * share * DT;
+        batteryKwh += st.discharge * share * DT;
+        shiftedKwh += p.shifted * DT;
+      } else {
+        const own = Math.min(p.use, p.pv);
+        ownKwh += own * DT;
+        const share = st.grid + st.shortfall > 0 ? (p.use - own) / (st.grid + st.shortfall) : 0;
+        gridKwh += st.grid * share * DT;
+        unservedKwh += st.shortfall * share * DT;
+      }
+    }
+    const lines: BillLine[] = s.hub
+      ? [
+          {label: 'Stroom via leverancier', detail: `${Math.round(gridKwh)} kWh × € ${TARIFF.grid.toFixed(2)}`, amount: eur(gridKwh * TARIFF.grid)},
+          {label: 'Zon & wind uit het smart grid', detail: `${Math.round(ownKwh)} kWh × € ${TARIFF.own.toFixed(2)}`, amount: eur(ownKwh * TARIFF.own)},
+          {label: 'Uit de batterij', detail: `${Math.round(batteryKwh)} kWh × € ${TARIFF.battery.toFixed(2)}`, amount: eur(batteryKwh * TARIFF.battery)},
+          {label: 'Bijdrage coöperatie (minimum)', detail: `${c.minKw} kW × € ${TARIFF.capacityPerKwDay.toFixed(2)}`, amount: eur(c.minKw * TARIFF.capacityPerKwDay)},
+          ...(roofKwh > 0.5 ? [{label: 'Vergoeding eigen dakopwek', detail: `${Math.round(roofKwh)} kWh × € ${TARIFF.feedInCredit.toFixed(2)}`, amount: -eur(roofKwh * TARIFF.feedInCredit)}] : []),
+          ...(shiftedKwh > 0.5 ? [{label: 'Flexvergoeding (geschoven)', detail: `${Math.round(shiftedKwh)} kWh × € ${TARIFF.flexCredit.toFixed(2)}`, amount: -eur(shiftedKwh * TARIFF.flexCredit)}] : []),
+        ]
+      : [
+          {label: 'Stroom via eigen aansluiting', detail: `${Math.round(gridKwh)} kWh × € ${TARIFF.grid.toFixed(2)}`, amount: eur(gridKwh * TARIFF.grid)},
+          {label: 'Capaciteitstarief (eigen piek)', detail: `${Math.round(peakKw)} kW × € ${TARIFF.capacityPerKwDay.toFixed(2)}`, amount: eur(peakKw * TARIFF.capacityPerKwDay)},
+        ];
+    const total = lines.reduce((a, l) => a + l.amount, 0);
+    return {id: c.id, name: c.name, useKwh, gridKwh, ownKwh, batteryKwh, shiftedKwh, unservedKwh, peakKw, roofKwh, lines, total};
+  });

@@ -1,4 +1,5 @@
 import {BUILDINGS, HUB, SOLAR_PARK, TRAFO, TURBINE, WADIS} from '../../src/world/layout';
+import {HEAT_STATION, LAADPLEIN} from '../../src/world/Future';
 
 export type Mode = 'nu' | 'hub';
 export type Tone = 'red' | 'cyan' | 'yellow' | 'green' | 'neutral';
@@ -78,6 +79,11 @@ const buildingZone = (i: number): Zone => {
         ...(solar
           ? [{label: 'Eigen opwek (zon)', value: (t: number) => `${Math.round(BASE[i] * 0.35 + wobble(t, i + 9, 8))} kW`, tone: 'yellow' as Tone}]
           : []),
+        ...(i === 0 || i === 5
+          ? [{label: 'Restwarmte naar warmtenet', value: (t: number) => `${Math.round((i === 0 ? 150 : 140) + wobble(t, i + 3, 10))} kW`, tone: 'yellow' as Tone}]
+          : i === 1 || i === 6 || i === 7
+            ? [{label: 'Warmte uit warmtenet', value: (t: number) => `${Math.round(60 + wobble(t, i + 5, 8))} kW`, tone: 'yellow' as Tone}]
+            : []),
       ],
     },
   };
@@ -154,6 +160,51 @@ export const ZONES: Zone[] = [
       kicker: 'Ook als de zon niet schijnt',
       tone: 'yellow',
       text: 'Een kleine windturbine vult de zonnestroom aan, juist ’s avonds en in de winter.',
+    },
+  },
+  {
+    id: 'warmtenet',
+    title: 'Warmtepomp en warmtebuffer',
+    center: [HEAT_STATION.x, 3, HEAT_STATION.z],
+    size: [5, 7, 8],
+    only: 'hub',
+    hub: {
+      kicker: 'Lokaal warmtenet',
+      tone: 'yellow',
+      text: 'Restwarmte van de metaalbewerking en het koelhuis gaat via ondergrondse leidingen naar kantoren en panden met warmtevraag. Haalbaarheid hangt af van temperatuur, afstand, aanbod en vraag.',
+      stats: [
+        {label: 'Restwarmte benut', value: () => '≈ 62%', tone: 'yellow', bar: () => 0.62},
+        {label: 'Warmtebuffer', value: (t) => `${Math.round(70 + 15 * Math.sin(t * 0.3))}%`, tone: 'yellow'},
+      ],
+    },
+  },
+  {
+    id: 'laadplein',
+    title: 'Gedeeld laadplein',
+    center: [(LAADPLEIN.minX + LAADPLEIN.maxX) / 2, 1.5, (LAADPLEIN.minZ + LAADPLEIN.maxZ) / 2],
+    size: [LAADPLEIN.maxX - LAADPLEIN.minX, 3, LAADPLEIN.maxZ - LAADPLEIN.minZ],
+    only: 'hub',
+    hub: {
+      kicker: '± 2 hectare',
+      tone: 'cyan',
+      text: 'Carports met zonnepanelen, laadpunten voor auto’s en vrachtwagens, groen en wateropvang. Laden wordt gepland buiten de avondpiek.',
+      stats: [
+        {label: 'Zon op carports', value: (t) => `${Math.round(210 + wobble(t, 4, 20))} kW`, tone: 'yellow'},
+        {label: 'Laadpunten', value: () => 'auto’s + 3 vrachtwagens', tone: 'cyan'},
+      ],
+    },
+  },
+  {
+    id: 'vrachtwagens',
+    title: 'Elektrische vrachtwagens',
+    center: [31, 1.5, 2.6],
+    size: [5, 3, 11],
+    only: 'nu',
+    nu: {
+      kicker: 'Elektrificatie',
+      tone: 'red',
+      text: 'De logistiek stapt over op elektrische vrachtwagens, maar voor snelladers is geen netcapaciteit.',
+      stats: [{label: 'Snelladers', value: () => 'wacht op aansluiting', tone: 'red'}],
     },
   },
   ...WADIS.map(

@@ -2,7 +2,6 @@ import React, {useEffect, useLayoutEffect, useMemo, useRef, useState} from 'reac
 import {
   CATEGORY_LABEL,
   COMPANIES,
-  DEFAULT_SETTINGS,
   PEAK_END,
   PEAK_START,
   STEPS,
@@ -10,6 +9,8 @@ import {
   events,
   fmtTime,
   simulate,
+  billing,
+  TARIFF,
   type Category,
   type DayResult,
   type Settings,
@@ -292,9 +293,113 @@ const Companies: React.FC<{step: Step; s: Settings; open: number | null; setOpen
   );
 };
 
+/* ---------------------------------------------------------------- facturatie */
+
+const eur = (x: number) => `€ ${x.toLocaleString('nl-NL', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+
+export const Billing: React.FC<{r: DayResult; other: DayResult; s: Settings; open: number | null; setOpen: (i: number | null) => void}> = ({r, other, s, open, setOpen}) => {
+  const bills = useMemo(() => billing(r, s), [r, s]);
+  const otherBills = useMemo(() => billing(other, {...s, hub: !s.hub}), [other, s]);
+  const sel = open ?? 0;
+  const b = bills[sel];
+  const tot = bills.reduce((a, x) => a + x.total, 0);
+  const totOther = otherBills.reduce((a, x) => a + x.total, 0);
+  const gridTot = bills.reduce((a, x) => a + x.gridKwh, 0);
+  return (
+    <div className="panel billing">
+      <div className="panel-head">
+        <h3>Gebruik &amp; facturatie per bedrijf</h3>
+        <span className="muted">hele dag · indicatieve tarieven excl. btw</span>
+      </div>
+
+      <div className="billflow" aria-label="Hoe er wordt gefactureerd">
+        {s.hub ? (
+          <>
+            <div className="bf-node"><b>Leverancier</b><small>levert zoals afgesproken</small></div>
+            <div className="bf-arrow"><span>1 factuur · {Math.round(gridTot).toLocaleString('nl-NL')} kWh</span></div>
+            <div className="bf-node hub"><b>Coöperatie</b><small>verdeelt op basis van meetdata</small></div>
+            <div className="bf-arrow"><span>8 facturen naar gebruik</span></div>
+            <div className="bf-node"><b>Bedrijven</b><small>betalen wat ze gebruiken</small></div>
+          </>
+        ) : (
+          <>
+            <div className="bf-node"><b>Leverancier &amp; netbeheerder</b><small>per aansluiting</small></div>
+            <div className="bf-arrow red"><span>8 losse contracten en facturen</span></div>
+            <div className="bf-node"><b>Bedrijven</b><small>ieder voor zich, eigen piek telt</small></div>
+          </>
+        )}
+      </div>
+
+      <div className="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">Bedrijf</th>
+              <th scope="col" className="num">Verbruik</th>
+              <th scope="col" className="num">Eigen opwek</th>
+              <th scope="col" className="num">{s.hub ? 'Geschoven' : 'Niet geleverd'}</th>
+              <th scope="col" className="num">Kosten vandaag</th>
+              <th scope="col" className="num">{s.hub ? 'Zonder hub' : 'Met hub'}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {bills.map((x, i) => {
+              const o = otherBills[i];
+              const diff = x.total - o.total;
+              return (
+                <tr key={x.id} className={i === sel ? 'sel' : ''} onClick={() => setOpen(i)} tabIndex={0} onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && setOpen(i)} aria-selected={i === sel}>
+                  <th scope="row"><span className="num-badge">{x.id}</span>{x.name}</th>
+                  <td className="num">{kwh(x.useKwh)}</td>
+                  <td className="num">{pct(x.useKwh ? (x.ownKwh + x.batteryKwh) / x.useKwh : 0)}</td>
+                  <td className="num">{s.hub ? kwh(x.shiftedKwh) : <span className={x.unservedKwh > 0.5 ? 'warn' : ''}>{kwh(x.unservedKwh)}</span>}</td>
+                  <td className="num strong">{eur(x.total)}</td>
+                  <td className="num muted">
+                    {eur(o.total)} <span className={(s.hub ? diff <= 0 : diff >= 0) ? 'good' : 'bad'}>({diff <= 0 ? '−' : '+'}{eur(Math.abs(diff)).replace('€ ', '€')})</span>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+          <tfoot>
+            <tr>
+              <th scope="row">Hele terrein</th>
+              <td className="num">{kwh(bills.reduce((a, x) => a + x.useKwh, 0))}</td>
+              <td className="num">{pct(bills.reduce((a, x) => a + x.ownKwh + x.batteryKwh, 0) / Math.max(1, bills.reduce((a, x) => a + x.useKwh, 0)))}</td>
+              <td className="num">{kwh(bills.reduce((a, x) => a + (s.hub ? x.shiftedKwh : x.unservedKwh), 0))}</td>
+              <td className="num strong">{eur(tot)}</td>
+              <td className="num muted">{eur(totOther)}</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+
+      <div className="invoice">
+        <div className="inv-head">
+          <b>Factuur vandaag · {b.name}</b>
+          <span className="muted">{s.hub ? 'via de coöperatie' : 'eigen aansluiting'}</span>
+        </div>
+        {b.lines.map((l) => (
+          <div key={l.label} className="inv-line">
+            <span>{l.label}<small>{l.detail}</small></span>
+            <b className={l.amount < 0 ? 'credit' : ''}>{l.amount < 0 ? '− ' : ''}{eur(Math.abs(l.amount))}</b>
+          </div>
+        ))}
+        <div className="inv-line total">
+          <span>Totaal</span>
+          <b>{eur(b.total)}</b>
+        </div>
+        {!s.hub && b.unservedKwh > 0.5 ? <p className="note">Daarnaast {kwh(b.unservedKwh)} vraag die het net niet kon leveren: productie die niet doorgaat.</p> : null}
+        <p className="note">
+          Aannames: net € {TARIFF.grid.toFixed(2)}/kWh, eigen opwek € {TARIFF.own.toFixed(2)}/kWh, batterij € {TARIFF.battery.toFixed(2)}/kWh, capaciteit € {TARIFF.capacityPerKwDay.toFixed(2)} per kW per dag, flexvergoeding € {TARIFF.flexCredit.toFixed(2)}/kWh. Klik op een bedrijf voor de factuurregels.
+        </p>
+      </div>
+    </div>
+  );
+};
+
 /* ---------------------------------------------------------------- bediening */
 
-const Seg: React.FC<{value: string; options: {v: string; label: string; tone?: string}[]; onChange: (v: string) => void; label: string}> = ({value, options, onChange, label}) => (
+export const Seg: React.FC<{value: string; options: {v: string; label: string; tone?: string}[]; onChange: (v: string) => void; label: string}> = ({value, options, onChange, label}) => (
   <div className="seg" role="radiogroup" aria-label={label}>
     {options.map((o) => (
       <button key={o.v} role="radio" aria-checked={value === o.v} className={value === o.v ? `on ${o.tone ?? ''}` : ''} onClick={() => onChange(o.v)}>
@@ -368,8 +473,7 @@ const Kpi: React.FC<{label: string; value: string; other: string; better: boolea
 
 /* ---------------------------------------------------------------- pagina */
 
-export const Demo: React.FC<{tabs: React.ReactNode}> = ({tabs}) => {
-  const [s, setS] = useState<Settings>(DEFAULT_SETTINGS);
+export const Demo: React.FC<{tabs: React.ReactNode; s: Settings; setS: React.Dispatch<React.SetStateAction<Settings>>}> = ({tabs, s, setS}) => {
   const set = (p: Partial<Settings>) => setS((prev) => ({...prev, ...p}));
   const r = useMemo(() => simulate(s), [s]);
   const other = useMemo(() => simulate({...s, hub: !s.hub}), [s]);
@@ -472,6 +576,7 @@ export const Demo: React.FC<{tabs: React.ReactNode}> = ({tabs}) => {
             <DayChart r={r} s={s} t={t} onPick={(h) => { setPlaying(false); setT(h); }} />
             {s.hub && s.batteryKwh > 0 ? <SocChart r={r} t={t} capKwh={s.batteryKwh} /> : null}
           </div>
+
         </main>
 
         <div className="d-side">

@@ -1,31 +1,44 @@
 import React, {useEffect, useState} from 'react';
 import {Demo} from './demo/Demo';
+import {BillingPage} from './demo/BillingPage';
+import {DEFAULT_SETTINGS, type Settings} from './demo/sim';
 import {MapView} from './App';
 
-type Route = 'demo' | 'plattegrond';
-const read = (): Route => (window.location.hash.replace('#', '') === 'plattegrond' ? 'plattegrond' : 'demo');
+type Route = 'demo' | 'facturatie' | 'plattegrond';
+const ROUTES: {id: Route; label: string; title: string}[] = [
+  {id: 'demo', label: 'Demo dashboard', title: 'Energy Hub · Demo dashboard'},
+  {id: 'facturatie', label: 'Facturatie', title: 'Energy Hub · Facturatie'},
+  {id: 'plattegrond', label: 'Plattegrond', title: 'Energy Hub · Plattegrond'},
+];
+const read = (): Route => {
+  const h = window.location.hash.replace('#', '');
+  return (ROUTES.find((r) => r.id === h)?.id ?? 'demo') as Route;
+};
 
-/** Dashboard-demo is de startpagina; de plattegrond is het tweede tabblad. */
+/** Dashboard-demo is de startpagina; facturatie en plattegrond zijn de volgende tabbladen. */
 export const Root: React.FC = () => {
   const [route, setRoute] = useState<Route>(read);
+  // Scenario wordt gedeeld tussen dashboard en facturatie.
+  const [settings, setSettings] = useState<Settings>(DEFAULT_SETTINGS);
   useEffect(() => {
     const on = () => setRoute(read());
     window.addEventListener('hashchange', on);
     return () => window.removeEventListener('hashchange', on);
   }, []);
   useEffect(() => {
-    document.title = route === 'demo' ? 'Energy Hub · Demo dashboard' : 'Energy Hub · Plattegrond';
+    document.title = ROUTES.find((r) => r.id === route)!.title;
     document.body.style.cursor = 'default';
   }, [route]);
   const tabs = (
     <nav className="tabs" aria-label="Onderdelen">
-      <a href="#demo" className={route === 'demo' ? 'active' : ''} aria-current={route === 'demo' ? 'page' : undefined}>
-        Demo dashboard
-      </a>
-      <a href="#plattegrond" className={route === 'plattegrond' ? 'active' : ''} aria-current={route === 'plattegrond' ? 'page' : undefined}>
-        Plattegrond
-      </a>
+      {ROUTES.map((r) => (
+        <a key={r.id} href={`#${r.id}`} className={route === r.id ? 'active' : ''} aria-current={route === r.id ? 'page' : undefined}>
+          {r.label}
+        </a>
+      ))}
     </nav>
   );
-  return route === 'demo' ? <Demo tabs={tabs} /> : <MapView tabs={tabs} />;
+  if (route === 'plattegrond') return <MapView tabs={tabs} />;
+  if (route === 'facturatie') return <BillingPage tabs={tabs} s={settings} setS={setSettings} />;
+  return <Demo tabs={tabs} s={settings} setS={setSettings} />;
 };

@@ -4,6 +4,14 @@
 
 Alles is procedureel opgebouwd uit primitives (geen externe 3D-modellen). Output: 1920×1080, 30 fps, H.264.
 
+## Verhaallijn (12 scènes)
+
+Netcongestie is de aanleiding, niet het hele verhaal: het concept bereidt bedrijventerreinen voor op de toekomst.
+
+1. De uitdaging van vandaag · 2. Het echte probleem is groter (elektrificatie, hitte, water, ruimte) · 3. Onze visie · 4. De slimme Energy Hub + dashboard · 5. Lokaal warmtenet · 6. Ruimtelijke transformatie + gedeeld laadplein (± 2 ha) · 7. Praktijkvoorbeeld Haulerwijk · 8. Coöperatie · 9. Voordelen (traditioneel vs toekomstbestendig) · 10. Risico's en uitvoerbaarheid · 11. Afsluiter (Drenthe → Nederland) · 12. Het team · eindkaart.
+
+Teksten, keywords en beeldbeschrijvingen staan in `src/script.ts`; het draaiboek voor de spreker in [VOICEOVER.md](VOICEOVER.md).
+
 ## Installeren
 
 ```bash
@@ -78,10 +86,17 @@ node scripts/voiceover-md.mjs
 
 `VOICEOVER.md` opnieuw genereren na het aanpassen van teksten.
 
-## Website: demo-dashboard + plattegrond (web/)
+```bash
+npm run vo-pdf
+```
+
+`VOICEOVER.pdf` (printbaar draaiboek voor de spreker) opnieuw maken uit `out/timeline.json`.
+
+## Website: demo-dashboard, facturatie en plattegrond (web/)
 
 Live op https://energy-hub-plattegrond.vercel.app.
 
+- **Facturatie** (`#facturatie`): één factuur van de leverancier aan de coöperatie, verdeeld per bedrijf naar gebruik (net, eigen opwek, batterij, bijdrage minimum, vergoedingen), met vergelijking zonder hub. Tarieven zijn indicatief (`TARIFF` in `web/src/demo/sim.ts`). Deelt het scenario met het dashboard.
 - **Demo dashboard** (startpagina): simulatie van een dag op het terrein in kwartieren, met/zonder Energy Hub, winter/zomer, afgesproken levering, batterij, zonnepark, windturbine en drie gedragsregels van de community. Per bedrijf: verbruik per categorie, gegarandeerd minimum, wat er geschoven wordt en advies. Het model staat in `web/src/demo/sim.ts` (indicatieve waarden), de pagina in `web/src/demo/Demo.tsx`.
 - **Plattegrond** (`#plattegrond`): hover-kaart van het terrein met dezelfde 3D-wereld als de video. Teksten en cijfers per gebouw staan in `web/src/zones.ts`.
 
@@ -117,3 +132,8 @@ src/overlay/         2D: keywords, dashboard, splitscreen, eindtitel, teleprompt
 scripts/             render-, stills- en draaiboekscripts
 public/vo/           hier komen de opnames
 ```
+
+## Bronnen
+
+- Provinciegrenzen (kaart van Drenthe en Nederland): CBS Gebiedsindelingen, provincies gegeneraliseerd 2024, via PDOK (open data, CC BY 4.0), vereenvoudigd in `src/world/provinces.json`.
+- Praktijkvoorbeeld Haulerwijk: Gemeente Ooststellingwerf, 2 februari 2026 (intentieverklaring; onderzoeksfase).

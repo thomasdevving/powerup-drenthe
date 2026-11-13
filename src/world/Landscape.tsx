@@ -61,6 +61,7 @@ const makeTrees = (): Tree[] => {
     out.push({x, z: 31, s: 1});
   }
   for (let z = -30; z <= 30; z += 6) {
+    if (z > -8 && z < 14) continue; // ruimte voor het gedeelde laadplein
     out.push({x: 40, z, s: 0.9});
   }
   return out;

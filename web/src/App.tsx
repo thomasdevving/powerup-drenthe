@@ -2,13 +2,14 @@ import React, {useEffect, useLayoutEffect, useMemo, useRef, useState} from 'reac
 import {Canvas, useThree} from '@react-three/fiber';
 import * as THREE from 'three';
 import {defaultTimeline, storyAt, type Story} from '../../src/timeline';
-import {worldState} from '../../src/world/state';
+import {at, worldState} from '../../src/world/state';
 import {World} from '../../src/world/World';
 import {C} from '../../src/util';
 import {ZONES, type Mode, type Tone, type Zone} from './zones';
 
 const TL = defaultTimeline();
-const S_FOR: Record<Mode, number> = {nu: 1.9, hub: 8.05};
+// Story-time in de video: 'nu' = eind van 'het echte probleem is groter', 'hub' = alles getransformeerd (na coöperatie)
+const S_FOR: Record<Mode, number> = {nu: at('groter-probleem', 0.92), hub: at('cooperatie', 0.95)};
 const TONE: Record<Tone, string> = {
   red: C.congestion,
   cyan: C.grid,
@@ -233,7 +234,7 @@ export const MapView: React.FC<{tabs: React.ReactNode}> = ({tabs}) => {
 
   const story = storyFor(s, now);
   const raw = worldState(story);
-  const ws = {...raw, dim: 0, dash: 0, map: 0, localFade: 0, dusk: Math.min(raw.dusk, 0.45)};
+  const ws = {...raw, dim: 0, dash: 0, map: 0, localFade: 0, heat: raw.heat * 0.5, rain: 0, coopCard: 0, heatCard: 0, dusk: Math.min(raw.dusk, 0.45)};
 
   // Vaste camera: niets mag onder de cursor wegschuiven op een hover-kaart.
   const px = 0;

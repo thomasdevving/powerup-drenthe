@@ -16,6 +16,14 @@ const serveUrl = await makeBundle();
 const inputProps = {durationOverrides: parseOverrides()};
 const comp = await select(serveUrl, guide ? 'PitchVoGids' : 'Pitch', inputProps);
 const tl = comp.props.timeline;
+const frameArg = process.argv.find((a) => a.startsWith('--frame='));
+if (frameArg) {
+  const f = frameArg.slice(8) === 'last' ? comp.durationInFrames - 1 : Number(frameArg.slice(8));
+  const file = path.join(outDir, `frame-${f}.png`);
+  await renderStill({composition: comp, serveUrl, output: file, frame: f, inputProps: comp.props, chromiumOptions, overwrite: true});
+  console.log(`frame ${f} → ${path.relative(ROOT, file)}`);
+  process.exit(0);
+}
 const wanted = scenesArg ? scenesArg.slice(9).split(',').map((n) => Number(n) - 1) : tl.scenes.map((_, i) => i);
 for (const i of wanted) {
   const s = tl.scenes[i];

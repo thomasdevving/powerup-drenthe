@@ -1,88 +1,135 @@
 import type {Story} from '../timeline';
-import {SCENES, cueFraction} from '../script';
+import {SCENES, cueFraction, sceneIndex} from '../script';
 import {clamp01, easeOut, inOut, seg} from '../util';
 
-/** Moment (content-progress 0..1) waarop een woord in scène i valt. */
-export const cue = (i: number, word: string) => cueFraction(SCENES[i], word);
+/** Moment (content-progress 0..1) waarop een woord in scène `id` valt. */
+export const cue = (id: string, word: string) => cueFraction(SCENES[sceneIndex(id)], word);
+/** Story-time (s) van een punt binnen een scène. */
+export const at = (id: string, frac: number) => sceneIndex(id) + frac;
+
+const lin = (t: number) => t;
 
 /**
  * Alle choreografie op één plek. Elke waarde is een functie van scène-progress
- * (cprog = binnen het VO-venster), nooit van vaste frames.
+ * (c = binnen het VO-venster) of story-time, nooit van vaste frames.
+ * Scènes worden op id aangesproken, zodat volgorde en duur kunnen veranderen.
  */
 export const worldState = (st: Story) => {
-  const c = st.cprog;
-  const p = st.prog;
+  const c = (id: string) => st.cprog(sceneIndex(id));
   const s = st.s;
 
-  // Dag/nacht: schemering t/m de omslag, daarna helder daglicht.
-  const dusk = 1 - seg(s, 3.45, 4.2);
+  // ---- dag/nacht: schemering tot de visie, daarna helder daglicht
+  const dusk = 1 - seg(s, at('visie', 0.15), at('visie', 0.85));
 
-  // Congestie: lijnen kleuren rood en slibben dicht in de hook, verdwijnen in de omslag.
-  const congestion = Math.min(seg(c(0), cue(0, 'net') - 0.15, 1.0), 1 - seg(c(3), 0.0, 0.45));
-  const jam = Math.min(seg(c(0), cue(0, 'Maar'), 1.0) * 0.85 + seg(c(1), 0, 1) * 0.15, 1 - seg(c(3), 0, 0.45));
+  // ---- 1. De uitdaging van vandaag
+  const fadeProblems = 1 - seg(c('visie'), 0.05, 0.4);
+  const congestion = Math.min(seg(c('uitdaging'), cue('uitdaging', 'elektriciteitsnet') - 0.12, cue('uitdaging', 'vol.') + 0.05), fadeProblems);
+  const jam = Math.min(seg(c('uitdaging'), cue('uitdaging', 'vol.'), 1) * 0.85 + seg(c('groter-probleem'), 0, 1) * 0.15, fadeProblems);
+  const growTry = seg(c('uitdaging'), cue('uitdaging', 'groeien') - 0.04, cue('uitdaging', 'groeien') + 0.12, easeOut);
+  const growStop = seg(c('uitdaging'), cue('uitdaging', 'Uitbreidingen') - 0.03, cue('uitdaging', 'Uitbreidingen') + 0.07);
+  const ghost = Math.min(seg(s, at('uitdaging', 0.1), at('uitdaging', 0.2)), 1 - seg(s, at('visie', 0.1), at('visie', 0.35)));
+  const queue = seg(c('uitdaging'), cue('uitdaging', 'ontwikkelingen') - 0.15, cue('uitdaging', 'ontwikkelingen') + 0.08, easeOut) * fadeProblems;
+  const bounce = seg(c('uitdaging'), cue('uitdaging', 'verduurzamen,') - 0.04, cue('uitdaging', 'verduurzamen,') + 0.06) * (1 - seg(s, at('uitdaging', 0.92), at('groter-probleem', 0.1)));
+  const inset = inOut(c('uitdaging'), cue('uitdaging', 'elektriciteitsnet') - 0.04, cue('uitdaging', 'elektriciteitsnet') + 0.05, 0.93, 1.0);
+  const insetRed = seg(c('uitdaging'), cue('uitdaging', 'zit'), cue('uitdaging', 'vol.') + 0.1);
 
-  // Scène 2
-  const growTry = seg(c(1), 0.02, 0.2, easeOut); // verdieping schuift omhoog...
-  const growStop = seg(c(1), 0.2, 0.28); // ...en stopt (zakt terug, rood)
-  const queueIn = seg(c(1), cue(1, 'wachtrij') - 0.12, cue(1, 'wachtrij') + 0.12, easeOut);
-  const bounce = seg(c(1), cue(1, 'Terugleveren?') - 0.08, cue(1, 'Terugleveren?') + 0.04);
-  const inset = inOut(c(1), cue(1, 'Terugleveren?') - 0.02, cue(1, 'Terugleveren?') + 0.06, 0.93, 1.0);
-  const insetRed = seg(c(1), cue(1, 'Heel'), cue(1, 'rood.') + 0.08);
-  const groeiStop = seg(c(1), cue(1, 'groeien') - 0.04, cue(1, 'groeien') + 0.06);
-  // wachtrij verdwijnt in de omslag
-  const queue = queueIn * (1 - seg(c(3), 0.1, 0.5));
-  const bounceVis = bounce * (1 - seg(s, 2.05, 2.25));
+  // ---- 2. Het echte probleem is groter
+  const G = 'groter-probleem';
+  const pill = (w: string) => seg(c(G), cue(G, w) - 0.05, cue(G, w) + 0.04) * (1 - seg(c('visie'), 0.05, 0.35));
+  const pills = {
+    net: pill('netcongestie'),
+    trucks: pill('elektrificatie,'),
+    heat: pill('hittestress,'),
+    water: pill('wateroverlast'),
+    space: pill('ruimte.'),
+  };
+  const trucksIn = seg(c(G), cue(G, 'elektrificatie,') - 0.08, cue(G, 'elektrificatie,') + 0.04, easeOut);
+  const greenStart = cue('ruimte', 'Groene') - 0.03;
+  const greenEnd = cue('ruimte', 'klimaatbestendiger.') + 0.05;
+  const heat =
+    seg(c(G), cue(G, 'hittestress,') - 0.05, cue(G, 'hittestress,') + 0.05) *
+    (1 - 0.8 * seg(c('visie'), 0.1, 0.5)) *
+    (1 - seg(c('ruimte'), greenStart, greenEnd));
+  const puddles = seg(c(G), cue(G, 'wateroverlast') - 0.05, cue(G, 'wateroverlast') + 0.05) * (1 - seg(c('ruimte'), cue('ruimte', 'waterberging') - 0.05, greenEnd));
+  const rain = inOut(c(G), cue(G, 'wateroverlast') - 0.06, cue(G, 'wateroverlast'), cue(G, 'wateroverlast') + 0.12, cue(G, 'wateroverlast') + 0.22);
 
-  // Scène 3
-  const parkCables = Math.min(seg(c(2), 0.15, 0.45), 1 - seg(s, 3.6, 4.0));
-  const notConnected = inOut(c(2), cue(2, 'zonder') - 0.06, cue(2, 'zonder') + 0.04, 0.96, 1.0) *
-    (1 - seg(s, 3.0, 3.2));
+  // ---- 3. Visie (omslag)
+  const dim = inOut(s, at('visie', 0.0), at('visie', 0.12), at('visie', 0.82), at('visie', 0.98));
 
-  // Scène 4 (omslag)
-  const dim = inOut(s, 3.0, 3.18, 3.78, 4.05);
+  // ---- 4. De slimme Energy Hub
+  const H = 'energy-hub';
+  const hubRise = seg(c(H), cue(H, 'Energy') - 0.08, cue(H, 'Energy') + 0.06, easeOut);
+  const supplyCable = seg(c(H), cue(H, 'gezamenlijke') - 0.02, cue(H, 'Hub') + 0.06);
+  const ring = seg(c(H), cue(H, 'benutten'), cue(H, 'slimmer.'), lin);
+  const solarOpen = seg(c(H), cue(H, 'Lokale') - 0.03, cue(H, 'Lokale') + 0.06);
+  const turbine = seg(c(H), cue(H, 'opwekking,') - 0.03, cue(H, 'opwekking,') + 0.06, easeOut);
+  const parkLink = seg(c(H), cue(H, 'opwekking,'), cue(H, 'opslag') + 0.02);
+  const charge = seg(c(H), cue(H, 'opslag') - 0.03, cue(H, 'afgestemde'));
+  const peak = seg(c(H), cue(H, 'afgestemde') - 0.02, cue(H, 'afgestemde') + 0.03) * (1 - seg(s, at(H, 0.72), at(H, 0.8)));
+  const discharge = seg(c(H), cue(H, 'productiemomenten') - 0.02, cue(H, 'stroompieken'));
+  const battery =
+    s < at(H, 0) ? 0.15 : s >= at('warmtenet', 0) ? 0.62 + 0.18 * seg(c('warmtenet'), 0, 1) : clamp01(0.15 + charge * 0.75 - discharge * 0.35);
+  const gridOn = Math.max(ring, s >= at('warmtenet', 0) ? 1 : 0);
+  const dash = inOut(s, at(H, 0.66), at(H, 0.76), at(H, 0.97), at('warmtenet', 0.06));
+  const dashP = seg(s, at(H, 0.74), at(H, 0.99), lin);
 
-  // Scène 5 (Energy Hub)
-  const hubRise = seg(c(4), 0.0, 0.14, easeOut);
-  const supplyCable = seg(c(4), cue(4, 'leverancier') - 0.02, cue(4, 'leverancier') + 0.1);
-  const ring = seg(c(4), cue(4, 'verdeelt') - 0.04, cue(4, 'grid.'), (t) => t);
-  const solarOpen = seg(c(4), cue(4, 'Zelf') - 0.04, cue(4, 'Zelf') + 0.08);
-  const turbine = seg(c(4), cue(4, 'opgewekte') - 0.02, cue(4, 'opgewekte') + 0.08, easeOut);
-  const parkLink = seg(c(4), cue(4, 'opgewekte'), cue(4, 'stroom') + 0.08);
-  // batterij: laadt op met overschot, piek → ontlaadt, en herstelt weer
-  const charge = seg(c(4), cue(4, 'opgewekte') - 0.02, cue(4, 'batterijen'));
-  const peak = seg(c(4), cue(4, 'batterijen') - 0.03, cue(4, 'batterijen') + 0.03) * (1 - seg(s, 5.02, 5.12));
-  const discharge = seg(c(4), cue(4, 'vangt') - 0.04, 1.0);
-  const battery = s < 4 ? 0.15 : s >= 5 ? 0.62 + 0.18 * seg(c(5), 0, 1) : clamp01(0.15 + charge * 0.75 - discharge * 0.35);
-  const gridOn = Math.max(ring, s >= 5 ? 1 : 0);
+  // ---- 5. Lokaal warmtenet
+  const W = 'warmtenet';
+  const heatWaste = inOut(c(W), 0.0, 0.08, cue(W, 'warmtenet') + 0.04, cue(W, 'warmtenet') + 0.2);
+  const heatNet = seg(c(W), cue(W, 'lokaal') - 0.04, cue(W, 'warmtenet') + 0.1, lin);
+  const heatStation = seg(c(W), cue(W, 'warmtenet') - 0.04, cue(W, 'warmtenet') + 0.06, easeOut);
+  const heatFlow = seg(c(W), cue(W, 'benut') - 0.02, cue(W, 'gebouwen') + 0.04);
+  const heatSinks = seg(c(W), cue(W, 'gebouwen'), cue(W, 'verwarmen.') + 0.05);
+  const heatCard = seg(c(W), cue(W, 'benut') - 0.02, cue(W, 'benut') + 0.06) * (1 - seg(s, at(W, 0.97), at('ruimte', 0.05)));
+  const heatRecovered = seg(c(W), cue(W, 'benut'), cue(W, 'efficiënter'));
+  const wasteLabel = inOut(c(W), 0.05, 0.12, cue(W, 'lokaal') - 0.04, cue(W, 'lokaal') + 0.04);
+  const stationLabel = inOut(c(W), cue(W, 'warmtenet'), cue(W, 'warmtenet') + 0.06, 0.96, 1.0);
 
-  // Scène 6: dashboardpaneel
-  const dash = inOut(s, 4.94, 5.12, 5.9, 6.05);
+  // ---- 6. Ruimtelijke transformatie
+  const R = 'ruimte';
+  const growOk = seg(c(R), 0.0, 0.15, easeOut);
+  const green = seg(c(R), greenStart, greenEnd);
+  const cool = green;
+  const laadplein = seg(c(R), cue(R, 'Gedeelde') - 0.05, cue(R, 'zonnepanelen') + 0.03);
+  const laadSolar = seg(c(R), cue(R, 'zonnepanelen') - 0.03, cue(R, 'zonnepanelen') + 0.08, easeOut);
+  const truckMove = seg(c(R), cue(R, 'mobiliteit,') - 0.04, cue(R, 'ruimtegebruik.'));
+  const laadLabel = seg(c(R), cue(R, 'Gedeelde'), cue(R, 'Gedeelde') + 0.08) * (1 - seg(s, at(R, 0.97), at('haulerwijk', 0.05)));
 
-  // Scène 7
-  const cool = seg(c(6), 0.0, cue(6, 'hittestress,') + 0.1);
-  // Hittewaas komt op tijdens de overgang naar scène 7 en koelt dan af.
-  const heat = Math.min(seg(s, 5.95, 6.08), 1 - cool);
-  const green = seg(c(6), 0.05, cue(6, 'waterafvoer.') + 0.05);
-  const community = seg(c(6), cue(6, 'Ondernemers') - 0.03, cue(6, 'samen.'));
+  // ---- 7. Haulerwijk
+  const HW = 'haulerwijk';
+  const haulerwijk = inOut(s, at(HW, 0.0), at(HW, 0.07), at(HW, 0.95), at('cooperatie', 0.04));
+  const hwOurs = seg(c(HW), cue(HW, 'Wij') - 0.04, cue(HW, 'Wij') + 0.1);
 
-  // Scène 8
-  const split = inOut(s, 7.02, 7.12, 7.93, 8.02);
-  // Pand 1 krijgt nu wél zijn extra verdieping
-  const growOk = seg(c(7), cue(7, 'ruimte') - 0.05, cue(7, 'groeien.') + 0.05, easeOut);
+  // ---- 8. Coöperatie
+  const CO = 'cooperatie';
+  const coop = seg(c(CO), cue(CO, 'samenwerking.') - 0.12, cue(CO, 'coöperatie') + 0.05, lin);
+  const coopCard = seg(c(CO), cue(CO, 'coöperatie') - 0.03, cue(CO, 'coöperatie') + 0.06) * (1 - seg(s, at(CO, 0.97), at('voordelen', 0.04)));
 
-  // Scène 9: kaart
-  const map = seg(s, 8.13, 8.22);
-  const localFade = seg(s, 8.15, 8.24);
-  const sitesLit = seg(c(8), cue(8, 'toepasbaar') - 0.05, cue(8, 'Drenthe,') + 0.04, (t) => t);
-  const nlLit = seg(c(8), cue(8, 'daarna'), cue(8, 'Nederland.') + 0.06, (t) => t);
-  const endTitle = Math.max(seg(c(8), cue(8, 'Want'), cue(8, 'Want') + 0.12), st.outro > 0 ? 1 : 0);
+  // ---- 9. Voordelen
+  const split = inOut(s, at('voordelen', 0.0), at('voordelen', 0.08), at('voordelen', 0.94), at('risicos', 0.03));
+
+  // ---- 10. Risico's
+  const risks = inOut(s, at('risicos', 0.0), at('risicos', 0.06), at('risicos', 0.95), at('afsluiter', 0.05));
+
+  // ---- 11. Afsluiter
+  const A = 'afsluiter';
+  const map = seg(s, at(A, 0.5), at(A, 0.56));
+  const localFade = seg(s, at(A, 0.51), at(A, 0.57));
+  const sitesLit = seg(c(A), cue(A, 'Met') - 0.04, cue(A, 'Vandaag') + 0.02, lin);
+  const nlLit = seg(c(A), cue(A, 'morgen') - 0.02, 1.0, lin);
+  const endTitle = st.outro > 0 ? seg(st.outro, 0, 0.2) : 0;
 
   return {
-    dusk, congestion, jam, growTry, growStop, queue, bounce: bounceVis, inset, insetRed, groeiStop,
-    parkCables, notConnected, dim, hubRise, supplyCable, ring, solarOpen, turbine, parkLink,
-    battery, peak, gridOn, dash, cool, heat: clamp01(heat), green, community, split,
-    growOk, map, localFade, sitesLit, nlLit, endTitle, charge, discharge,
-    p, c, s,
+    dusk, congestion, jam, growTry, growStop, ghost, queue, bounce, inset, insetRed,
+    pills, trucksIn, heat: clamp01(heat), puddles, rain, dim,
+    hubRise, supplyCable, ring, solarOpen, turbine, parkLink, charge, peak, discharge, battery, gridOn, dash, dashP,
+    heatWaste, heatNet, heatStation, heatFlow, heatSinks, heatCard, heatRecovered, wasteLabel, stationLabel,
+    growOk, green, cool, laadplein, laadSolar, truckMove, laadLabel,
+    haulerwijk, hwOurs, coop, coopCard, split, risks,
+    map, localFade, sitesLit, nlLit, endTitle,
+    // niet meer gebruikt in deze verhaallijn, wel nog gelezen door gedeelde componenten
+    parkCables: 0, notConnected: 0, community: 0,
+    c, s,
   };
 };
 

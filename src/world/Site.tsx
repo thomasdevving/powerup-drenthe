@@ -207,7 +207,7 @@ export const Site: React.FC<{ws: WorldState; sec: number}> = ({ws, sec}) => {
     grassRef.current!.instanceMatrix.needsUpdate = true;
   });
 
-  const ghostVis = Math.min(seg(ws.s, 1.0, 1.05), 1 - seg(ws.s, 3.2, 3.5));
+  const ghostVis = ws.ghost;
   const fade = 1 - ws.localFade;
 
   return (
@@ -373,23 +373,6 @@ export const Site: React.FC<{ws: WorldState; sec: number}> = ({ws, sec}) => {
             </mesh>
           ))
         : null}
-
-      {/* community-lijnen tussen ondernemers */}
-      {community.map((cv, i) => {
-        const r = clamp01(ws.community * 1.5 - i * 0.045) * (1 - seg(ws.s, 7.0, 7.15));
-        if (r <= 0.001) return null;
-        return <Cable key={i} curve={cv} radius={0.16} color="#d9ffe6" emissive={C.gridGreen} glow={0.8} reveal={r} segments={40} />;
-      })}
-      {BUILDINGS.map((b, i) => {
-        const r = clamp01(ws.community * 3 - i * 0.1) * (1 - seg(ws.s, 7.0, 7.15));
-        if (r <= 0.001) return null;
-        return (
-          <mesh key={i} position={[b.x, b.h + 1.3, b.z]} scale={[r, r, r]}>
-            <sphereGeometry args={[0.9, 12, 8]} />
-            <meshBasicMaterial color={C.gridGreen} toneMapped={false} />
-          </mesh>
-        );
-      })}
 
       {/* zwevend dashboardpaneel (inhoud wordt als 2D-overlay erop gelegd) */}
       {ws.dash > 0.001 ? (

@@ -11,6 +11,7 @@ De pitch duurt met de nieuwe Nederlandse synthetische voice-over **115,47 second
 Het bestaande dashboard bevat nu **Multi-Commodity Energy Management** met scenario A/B/C, warmtenet aan/uit, COP, buffer, leidingverliezen en terugwinbaar bronvermogen. Alle grafieken, facturatie en videowaarden gebruiken het gedeelde kwartiermodel in `src/energy/`. Tekorten boven de netlimiet blijven zichtbaar; kostenvoordelen worden niet geclaimd bij ongelijke levering.
 
 - [Video](out/pitch.mp4) · [Compact script als PDF](SCRIPT.pdf) · [Uitgebreid draaiboek](VOICEOVER.pdf) · [Gidsvideo](out/pitch-vo-gids.mp4) · [Ondertiteling](out/voiceover.srt)
+- [Telefoonversie van de video (720p, circa 25 MB)](out/powerup-drenthe-mobiel.mp4) — dezelfde inhoud en duur.
 - [Technische aannames, grenzen en controles](TECHNICAL.md)
 - Nieuwe audio: `public/vo/compact/scene-01.wav` t/m `scene-12.wav`; oudere opnames blijven behouden.
 - Fonts worden lokaal gebundeld via `@fontsource/inter`.

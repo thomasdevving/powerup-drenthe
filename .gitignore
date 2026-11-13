@@ -1,0 +1,16 @@
+# afhankelijkheden
+node_modules/
+
+# build- en deploy-uitvoer van de website
+web/dist/
+web/deploy/
+.vercel/
+
+# geheimen / lokale instellingen
+.env*
+.claude/
+.DS_Store
+
+# tijdelijke render-uitvoer (de eindvideo's en de SRT staan wél in de repo)
+out/stills/
+out/render.log

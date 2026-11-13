@@ -1,0 +1,16 @@
+{
+  "name": "energy-hub-wereld",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "deploy": "vite build && vercel deploy dist --prod"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "6.3.0",
+    "vercel": "65.15.0",
+    "vite": "8.3.8"
+  }
+}

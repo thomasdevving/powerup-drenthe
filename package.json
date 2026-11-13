@@ -1,0 +1,34 @@
+{
+  "name": "energy-hub-pitch",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Energy Hub pitchvideo — PowerUp Drenthe Hackathon 2026 (Energiek Innovatie Collectief)",
+  "scripts": {
+    "studio": "remotion studio",
+    "still": "node scripts/stills.mjs",
+    "render": "node scripts/render-all.mjs",
+    "render:pitch": "remotion render Pitch out/pitch.mp4",
+    "render:gids": "remotion render PitchVoGids out/pitch-vo-gids.mp4",
+    "srt": "node scripts/render-all.mjs --srt-only"
+  },
+  "type": "module",
+  "dependencies": {
+    "@react-three/fiber": "9.4.0",
+    "@remotion/bundler": "4.0.543",
+    "@remotion/cli": "4.0.543",
+    "@remotion/google-fonts": "4.0.543",
+    "@remotion/media-utils": "4.0.543",
+    "@remotion/renderer": "4.0.543",
+    "@remotion/three": "4.0.543",
+    "react": "19.2.0",
+    "react-dom": "19.2.0",
+    "remotion": "4.0.543",
+    "three": "0.180.0"
+  },
+  "devDependencies": {
+    "@types/react": "19.2.2",
+    "@types/react-dom": "19.2.2",
+    "@types/three": "0.180.0",
+    "typescript": "5.9.3"
+  }
+}

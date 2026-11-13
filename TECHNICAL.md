@@ -4,7 +4,7 @@ Deze versie breidt de bestaande Remotion/React Three Fiber-wereld en het bestaan
 
 ## Gedeelde berekening
 
-`src/energy/model.ts` is de enige simulatiekern. `profiles.ts` bevat de bestaande acht illustratieve bedrijven, seizoensprofielen en tarieven. `web/src/demo/sim.ts` bewaart de bestaande importinterface, zodat dashboard en facturatie dezelfde kern gebruiken. `pitch-data.ts` berekent de standaard winterdag voor de video uit dezelfde instellingen.
+`src/energy/model.ts` is de enige simulatiekern. `profiles.ts` bevat de bestaande acht illustratieve bedrijven, seizoensprofielen en tarieven. `web/src/demo/sim.ts` bewaart de bestaande importinterface, zodat dashboard en facturatie dezelfde kern gebruiken. Ook de hoverkaarten op de plattegrond gebruiken deze berekening en gedeelde instellingen; oude schijn-live waarden en vaste warmtepercentages zijn verwijderd. `pitch-data.ts` berekent de standaard winterdag voor de video uit dezelfde instellingen.
 
 Een dag bestaat uit 96 kwartieren. Elektrische vermogens staan in kW, elektriciteit en batterijvoorraad in kWh. Warmte en koude gebruiken kWth en kWhth; deze worden niet bij elektriciteit opgeteld. De koeling vraagt thermische koellast / EER aan elektriciteit. De afgevoerde condensatiewarmte is geproduceerde koude + koelstroom. Alleen het instelbare technisch terugwinbare aandeel is beschikbaar voor het warmtenet. Dit is een illustratieve aanname, geen broninventarisatie.
 
@@ -38,6 +38,6 @@ De 3D-warmtebuffer en het video-dashboard volgen dezelfde winterdag. De vergelij
 - `npm run typecheck`: root- en web-TypeScript.
 - `cd web && npm run build`: productiebuild van het dashboard.
 - Browsercontrole in Chromium: warmtenet aan/uit, COP, buffer, gedeelde facturatie, mobiele breedte en browserfouten.
-- Stillcontrole per scène: tekstpassen, risico's, dashboard, vergelijking en eindkaart. Volledige MP4-render en controle van duur, resolutie, audio en decodeerbaarheid horen bij de definitieve oplevering.
+- Stillcontrole per scène: tekstpassen, risico's, dashboard, vergelijking en eindkaart. Hoofdvideo en gidsvideo zijn volledig gerenderd en met FFprobe/FFmpeg gecontroleerd: beide 115,477 s, 1920×1080, 30 fps, H.264 met 48 kHz audio, volledig decodeerbaar. Beide PDF’s bevatten alle 12 exacte voice-overteksten; het compacte script past op één A4.
 
 Warmte-uitwisseling vereist geschikte bronnen, afnemers, temperatuur, afstand en financiële haalbaarheid. Collectieve infrastructuur vereist passende contracten en wettelijke toetsing. Soms blijft netverzwaring noodzakelijk.

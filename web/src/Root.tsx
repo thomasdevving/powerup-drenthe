@@ -38,7 +38,7 @@ export const Root: React.FC = () => {
       ))}
     </nav>
   );
-  if (route === 'plattegrond') return <MapView tabs={tabs} />;
+  if (route === 'plattegrond') return <MapView tabs={tabs} settings={settings} />;
   if (route === 'facturatie') return <BillingPage tabs={tabs} s={settings} setS={setSettings} />;
   return <Demo tabs={tabs} s={settings} setS={setSettings} />;
 };

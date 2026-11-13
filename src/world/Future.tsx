@@ -125,8 +125,8 @@ const Plume: React.FC<{x: number; y: number; z: number; amt: number; sec: number
 const HeatNetwork: React.FC<{ws: WorldState; sec: number}> = ({ws, sec}) => {
   const sources = useMemo(() => HEAT_SOURCES.map(polyCurve), []);
   const sinks = useMemo(() => HEAT_SINKS.map(polyCurve), []);
-  const step = pitchStep(ws.heatRecovered);
-  const fill = step.bufferKwh / DEFAULT_THERMAL.bufferKwh;
+  const step = ws.energyStep ?? pitchStep(ws.heatRecovered);
+  const fill = ws.thermalCapacity > 0 ? step.bufferKwh / ws.thermalCapacity : 0;
   const cold = useMemo(() => polyCurve([[-5, 0.50, 11.8], [-5, 0.50, 17], [-12, 0.50, 17], [-12, 0.50, 11.8]]), []);
   const power = useMemo(() => polyCurve([[0, 0.55, 2], [-5, 0.55, 2], [-5, 0.55, 11.8]]), []);
   const net = ws.heatNet;

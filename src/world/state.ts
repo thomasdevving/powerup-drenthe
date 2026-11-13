@@ -1,3 +1,4 @@
+import type {EnergyStep} from '../energy/model';
 import type {Story} from '../timeline';
 import {SCENES, cueFraction, sceneIndex} from '../script';
 import {clamp01, easeOut, inOut, seg} from '../util';
@@ -121,6 +122,8 @@ export const worldState = (st: Story) => {
   const endTitle = st.outro > 0 ? seg(st.outro, 0, 0.2) : 0;
 
   return {
+    energyStep: undefined as EnergyStep | undefined,
+    thermalCapacity: 600,
     dusk, congestion, jam, growTry, growStop, ghost, queue, bounce, inset, insetRed,
     pills, trucksIn, heat: clamp01(heat), puddles, rain, dim,
     hubRise, supplyCable, ring, solarOpen, turbine, parkLink, charge, peak, discharge, battery, gridOn, dash, dashP,

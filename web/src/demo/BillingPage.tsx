@@ -28,7 +28,7 @@ export const BillingPage: React.FC<{tabs: React.ReactNode; s: Settings; setS: Re
       <section className="intro">
         <h1>Eén factuur voor het terrein. Iedereen betaalt naar gebruik.</h1>
         <p>
-          De leverancier factureert de coöperatie voor de afgesproken levering. De coöperatie verdeelt de kosten per bedrijf op basis van de meetdata uit het dashboard: wat je uit het net, uit eigen opwek en uit de batterij gebruikt, plus een vaste bijdrage voor je gegarandeerde minimum. Wie verbruik schuift of zelf opwekt, krijgt een vergoeding.
+          De leverancier factureert de coöperatie voor de afgesproken levering. De coöperatie verdeelt de kosten per bedrijf op basis van de meetdata uit het dashboard: wat je uit het net, uit eigen opwek en uit de batterij gebruikt, plus een vaste bijdrage voor het referentievermogen. Dit is geen leveringsgarantie; eventuele tekorten worden apart getoond.
         </p>
       </section>
 

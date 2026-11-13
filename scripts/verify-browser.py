@@ -48,6 +48,6 @@ with sync_playwright() as p:
     page.evaluate('document.querySelector(".demo").scrollTop = document.querySelector(".multi").offsetTop - 16')
     page.screenshot(path=str(ROOT / 'out/dashboard-mobile.png'))
     assert page.evaluate('document.querySelector(".demo").scrollWidth <= document.querySelector(".demo").clientWidth')
-    print({'warmtenet_toggle':'ok','COP':'ok','buffer':'ok','facturatie':'ok','mobile':'ok','page_errors':errors})
+    print({'warmtenet_toggle':'ok','COP':'ok','buffer':'ok','facturatie':'ok','plattegrond':'ok','mobile':'ok','page_errors':errors})
     assert not errors
     b.close()
